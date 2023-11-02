@@ -4,6 +4,4 @@
   </v-main>
 </template>
 
-<script setup>
-  //
-</script>
+<script></script>
