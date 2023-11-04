@@ -5,7 +5,7 @@
         <v-skeleton-loader type="card" class="overflow-hidden" />
       </v-col>
     </slot>
-    <v-col v-for="activity in activities" :key="activity" lg="4" md="6">
+    <v-col v-for="activity in activities" :key="activity" lg="4" md="6" sm="12">
       <movie-card
         :activityId="activity.id"
         :movieId="activity.movieId"

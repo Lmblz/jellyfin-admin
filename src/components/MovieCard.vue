@@ -7,6 +7,7 @@
     variant="tonal"
     :image="posterBaseUrl + movie.backdrop_path"
     v-if="!isMovieLoading"
+    class="d-flex flex-column"
   >
     <v-row class="pa-2 ma-0">
       <v-avatar
