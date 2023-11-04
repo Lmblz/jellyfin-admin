@@ -5,7 +5,7 @@
         <v-skeleton-loader type="card" class="overflow-hidden" />
       </v-col>
     </slot>
-    <v-col v-for="activity in activities" :key="activity" cols="4">
+    <v-col v-for="activity in activities" :key="activity" lg="4" md="6">
       <movie-card
         :activityId="activity.id"
         :movieId="activity.movieId"
@@ -14,6 +14,8 @@
         :deviceAppVersion="activity.deviceAppVersion"
         :extraCodecInfo="activity.extraCodecInfo"
         :mediaFileName="activity.mediaFileName"
+        :percentWatch="activity.percentWatch"
+        :playMethod="activity.playMethod"
       />
     </v-col>
   </v-row>
