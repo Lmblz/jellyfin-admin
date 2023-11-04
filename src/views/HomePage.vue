@@ -5,7 +5,15 @@
         <v-skeleton-loader type="card" class="overflow-hidden" />
       </v-col>
     </slot>
-    <v-col v-for="activity in activities" :key="activity" lg="4" md="6" sm="12">
+    <v-col
+      v-else
+      v-for="activity in activities"
+      :key="generateKey(activity.userName, activity.movieId)"
+      xl="3"
+      lg="4"
+      md="6"
+      cols="12"
+    >
       <movie-card
         :activityId="activity.id"
         :movieId="activity.movieId"
@@ -39,13 +47,33 @@ export default {
   },
 
   async created() {
-    try {
-      this.activities = await ActivitiesService.getAll();
-    } catch (e) {
-      console.log(e);
-    }
-    console.log(this.activities);
+    await this.getActivities();
     this.areActivitiesLoading = false;
+
+    this.intervalId = setInterval(async () => {
+      await this.getActivities();
+    }, 5000);
+  },
+
+  methods: {
+    async getActivities() {
+      try {
+        this.activities = await ActivitiesService.getAll();
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    generateKey(...params) {
+      let key = "";
+      params.forEach((param) => {
+        key += param;
+      });
+      return key;
+    },
+  },
+
+  beforeUnmount() {
+    clearInterval(this.intervalId);
   },
 };
 </script>

@@ -74,6 +74,7 @@ export default {
       movieDuration: 0,
       posterBaseUrl: "https://image.tmdb.org/t/p/original/",
       movie: {},
+      oldMovieId: "",
       listElementsInCard: [
         {
           title: "App",
@@ -98,49 +99,54 @@ export default {
   props: {
     activityId: {
       type: String,
-      default: "0",
+      required: true,
     },
     movieId: {
       type: Number,
+      required: true,
     },
     userName: {
       type: String,
-      default: "undefined",
+      required: true,
     },
     deviceAppName: {
       type: String,
-      default: "undefined",
+      required: true,
     },
     deviceAppVersion: {
       type: String,
-      default: "undefined",
+      required: true,
     },
     extraCodecInfo: {
       type: String,
-      default: "undefined",
+      required: true,
     },
     mediaFileName: {
       type: String,
-      default: "undefined",
+      required: true,
     },
     playMethod: {
       type: String,
-      default: "",
+      required: true,
     },
     percentWatch: {
       type: Number,
-      default: 0,
+      required: true,
+    },
+  },
+
+  watch: {
+    movieId() {
+      this.getMovieInfos();
+    },
+    mediaFileName() {
+      console.log(this.mediaFileName);
     },
   },
 
   async created() {
-    try {
-      this.movie = await MoviesService.getMovie(this.$props.movieId);
-    } catch (e) {
-      console.log(e);
-    }
+    await this.getMovieInfos();
 
-    console.log(this.movie);
     this.isMovieLoading = false;
     this.movieDuration = this.movie.runtime;
     this.moviePercentWatched = this.$props.percentWatch;
@@ -150,6 +156,13 @@ export default {
   },
 
   methods: {
+    async getMovieInfos() {
+      try {
+        this.movie = await MoviesService.getMovie(this.$props.movieId);
+      } catch (e) {
+        console.log(e);
+      }
+    },
     movieDurationWatchedFormatted() {
       let m = this.movieDuration * (this.moviePercentWatched / 100);
       return new Date(m * 60 * 1000).toISOString().substr(11, 8);
