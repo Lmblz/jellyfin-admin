@@ -9,8 +9,7 @@
       v-else
       v-for="activity in activities"
       :key="generateKey(activity.userName, activity.tmdbId)"
-      xl="3"
-      lg="4"
+      lg="3"
       md="6"
       cols="12"
     >
@@ -20,6 +19,7 @@
           ip: activity.ip,
         }"
         :device="{
+          name: activity.deviceName,
           appName: activity.deviceAppName,
           appVersion: activity.deviceAppVersion,
         }"
@@ -32,6 +32,7 @@
           posterId: activity.posterId,
           remaningTime: activity.remaningTime,
           saison: activity.saison,
+          episode: activity.episode,
           startWatch: activity.startWatch,
           file: {
             name: activity.fileName,
@@ -51,7 +52,7 @@
 
 <script>
 import * as ActivitiesService from "../services/ActivitiesService.js";
-import ActivityCard from "../components/ActivityCard";
+import ActivityCard from "../components/ActivityCard.vue";
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 export default {
   data() {
@@ -70,9 +71,14 @@ export default {
     await this.getActivities();
     this.areActivitiesLoading = false;
 
-    // this.intervalId = setInterval(async () => {
-    //   await this.getActivities();
-    // }, 5000);
+    this.intervalId = setInterval(async () => {
+      await this.getActivities();
+    }, 10000);
+  },
+
+  async mounted() {
+    await this.getActivities();
+    this.areActivitiesLoading = false;
   },
 
   methods: {
