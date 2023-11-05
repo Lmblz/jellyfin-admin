@@ -8,22 +8,42 @@
     <v-col
       v-else
       v-for="activity in activities"
-      :key="generateKey(activity.userName, activity.movieId)"
+      :key="generateKey(activity.userName, activity.tmdbId)"
       xl="3"
       lg="4"
       md="6"
       cols="12"
     >
-      <movie-card
-        :activityId="activity.id"
-        :movieId="activity.movieId"
-        :userName="activity.userName"
-        :deviceAppName="activity.deviceAppName"
-        :deviceAppVersion="activity.deviceAppVersion"
-        :extraCodecInfo="activity.extraCodecInfo"
-        :mediaFileName="activity.mediaFileName"
-        :percentWatch="activity.percentWatch"
-        :playMethod="activity.playMethod"
+      <activity-card
+        :user="{
+          name: activity.userName,
+          ip: activity.ip,
+        }"
+        :device="{
+          appName: activity.deviceAppName,
+          appVersion: activity.deviceAppVersion,
+        }"
+        :media="{
+          id: activity.tmdbId,
+          title: activity.title,
+          type: activity.mediaType,
+          percentWatch: activity.percentWatch,
+          playMethod: activity.playMethod,
+          posterId: activity.posterId,
+          remaningTime: activity.remaningTime,
+          saison: activity.saison,
+          startWatch: activity.startWatch,
+          file: {
+            name: activity.fileName,
+            runtime: activity.fileRuntime,
+            library: activity.library,
+            codec: activity.fileExtraCodecInfo,
+          },
+          pause: {
+            isPaused: activity.isPaused,
+            pauseDuration: activity.pauseDuration,
+          },
+        }"
       />
     </v-col>
   </v-row>
@@ -31,7 +51,7 @@
 
 <script>
 import * as ActivitiesService from "../services/ActivitiesService.js";
-import MovieCard from "../components/MovieCard";
+import ActivityCard from "../components/ActivityCard";
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 export default {
   data() {
@@ -42,7 +62,7 @@ export default {
   },
 
   components: {
-    MovieCard,
+    ActivityCard,
     VSkeletonLoader,
   },
 
@@ -50,9 +70,9 @@ export default {
     await this.getActivities();
     this.areActivitiesLoading = false;
 
-    this.intervalId = setInterval(async () => {
-      await this.getActivities();
-    }, 5000);
+    // this.intervalId = setInterval(async () => {
+    //   await this.getActivities();
+    // }, 5000);
   },
 
   methods: {
