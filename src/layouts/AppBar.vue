@@ -1,7 +1,9 @@
 <template>
   <v-app-bar flat>
     <v-row class="mx-4 d-flex align-center justify-center">
-      <v-avatar class="me-4" color="primary" size="32"><b>J</b></v-avatar>
+      <v-avatar class="me-4 pa-1" color="primary" size="32"
+        ><v-img src="/favicon-black.png"
+      /></v-avatar>
       <router-link
         v-for="link in links"
         :key="link"
