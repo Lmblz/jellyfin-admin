@@ -67,3 +67,9 @@ bun run lint
 ### Customize configuration
 
 See [Configuration Reference](https://vitejs.dev/config/).
+
+### Execute Docker local server
+
+```
+docker run -it -p 8080:80 --rm --name jellyfin-server jellyfin_admin
+```
