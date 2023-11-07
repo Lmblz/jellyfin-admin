@@ -5,13 +5,14 @@
     width="100%"
     height="100%"
     variant="tonal"
-    class="d-flex flex-column bg-surface"
+    class="d-flex flex-column"
+    :style="{ background: media.posterColor }"
   >
-    <v-row class="pa-2 ma-0">
+    <v-row class="pa-2 pb-0 ma-0">
       <v-col cols="4" class="pa-0 h-100 d-flex align-center">
         <v-img :src="getMediaPoster" class="rounded"></v-img>
       </v-col>
-      <v-col cols="8" justify-self="end" class="pt-0">
+      <v-col cols="8" justify-self="end" class="pt-0 list-params">
         <v-list class="bg-transparent pa-0">
           <v-list-item
             v-for="element in listElementsInCard"
@@ -24,13 +25,19 @@
             </p>
           </v-list-item>
         </v-list>
-        <div
-          class="player-image rounded pa-1"
-          :style="{ background: getPlayerColor }"
-        >
-          <v-img :src="getPlayerImage" width="32"></v-img>
+        <div class="player-image rounded">
+          <v-img :src="getPlayerImage" width="50">
+            <v-tooltip activator="parent" location="end">{{
+              device.name
+            }}</v-tooltip></v-img
+          >
         </div>
       </v-col>
+    </v-row>
+    <v-row class="ma-0 px-2">
+      <p class="text-caption" style="font-size: 0.625rem !important">
+        {{ media.file.name }}
+      </p>
     </v-row>
     <v-card-actions class="pa-2 pt-3 w-100 flex-wrap bg-background">
       <div
@@ -38,44 +45,42 @@
         :style="{ width: media.percentWatch + '%' }"
       ></div>
       <v-row class="ma-0 align-center">
-        <div>
-          <v-icon
-            :icon="media.pause.isPaused ? 'mdi-pause' : 'mdi-play'"
-            size="x-small"
-            class="mr-1"
-          ></v-icon>
-          <v-tooltip activator="parent" location="end">{{
-            media.pause.isPaused ? getPauseDuration : "En cours de lecture"
-          }}</v-tooltip>
-        </div>
-        <p>{{ media.title }}</p>
-        <v-spacer></v-spacer>
-        <slot v-if="media.type == 'tv'">
-          <p class="text-caption mr-2">
-            E{{ media.episode }} - S{{ media.saison }}
+        <v-row class="ma-0 align-center">
+          <div>
+            <v-icon
+              :icon="media.pause.isPaused ? 'mdi-pause' : 'mdi-play'"
+              size="x-small"
+              class="mr-1"
+            ></v-icon>
+            <v-tooltip activator="parent" location="end">{{
+              media.pause.isPaused ? getPauseDuration : "En cours de lecture"
+            }}</v-tooltip>
+          </div>
+          <p class="text-caption mr-2">{{ media.title }}</p>
+          <slot v-if="media.type == 'tv'">
+            <p class="text-caption mr-2">
+              E{{ media.episode }} - S{{ media.saison }}
+            </p>
+          </slot>
+        </v-row>
+        <v-row class="ma-0">
+          <p class="text-caption">
+            {{ getTimePlayed }} /
+            {{
+              getTotalDuration.hh +
+              ":" +
+              getTotalDuration.mm +
+              ":" +
+              getTotalDuration.ss
+            }}
           </p>
-        </slot>
-        <p class="text-caption">
-          {{ getTimePlayed }} /
-          {{
-            getTotalDuration.hh +
-            ":" +
-            getTotalDuration.mm +
-            ":" +
-            getTotalDuration.ss
-          }}
-        </p>
-        <v-spacer></v-spacer>
-        <v-avatar
-          color="primary"
-          size="small"
-          class="user-avatar"
-          :title="user.name"
-          ><b>{{ user.name.split("")[0].toUpperCase() }} </b>
-          <v-tooltip activator="parent" location="end">{{
-            user.name
-          }}</v-tooltip></v-avatar
-        >
+          <div class="user-avatar__wrapper d-flex flex-column align-center">
+            <v-avatar color="primary" size="small" class="user-avatar__image"
+              ><b>{{ user.name.split("")[0].toUpperCase() }} </b></v-avatar
+            >
+            <p class="text-caption">{{ user.name }}</p>
+          </div>
+        </v-row>
       </v-row>
     </v-card-actions>
   </v-card>
@@ -103,10 +108,6 @@ export default {
           content: this.$props.media.file.library,
         },
         {
-          title: "Player",
-          content: this.$props.device.name,
-        },
-        {
           title: "App",
           content: this.$props.device.appName,
         },
@@ -119,8 +120,8 @@ export default {
           content: this.$props.media.file.codec,
         },
         {
-          title: "Nom du fichier",
-          content: this.$props.media.file.name,
+          title: "Début de lecture",
+          content: this.formatTime(this.$props.media.startWatch),
         },
       ],
     };
@@ -141,15 +142,11 @@ export default {
     },
   },
 
-  mounted() {
-    console.log(this.$props);
-  },
+  mounted() {},
 
   watch: {},
 
-  created() {
-    console.log(this.$props);
-  },
+  created() {},
 
   computed: {
     getMediaPoster() {
@@ -158,7 +155,6 @@ export default {
     getPauseDuration() {
       let time = this.$props.media.pause.pauseDuration;
       let timeFormatted = this.getHhMmSs(time);
-      console.log(timeFormatted);
 
       timeFormatted.ss.split("")[0] == "0"
         ? (timeFormatted.ss = timeFormatted.ss.split("")[1])
@@ -198,26 +194,10 @@ export default {
     },
     getPlayerImage() {
       let player = this.$props.device.name;
-      let extension = ".svg";
-      if (player == "Safari") {
-        extension = ".png";
-      }
+      player == "iPad" ? (player = "iPhone") : "";
+      let extension = ".png";
       let playerImagePath = "/Player-logos/" + player + extension;
       return playerImagePath;
-    },
-    getPlayerColor() {
-      // get browser svg https://github.com/alrra/browser-logos
-      let player = this.$props.device.name;
-      switch (player) {
-        case "Chrome":
-          return "#536b94";
-        case "Safari":
-          return "#CA3437";
-        case "Firefox":
-          return "#6A54BB";
-        default:
-          return "#FFFFFF";
-      }
     },
   },
 
@@ -229,8 +209,31 @@ export default {
       let ss = dataArray[2].split(".")[0];
       return { hh, mm, ss };
     },
+    getDdMmAaaa(date) {
+      let dataArray = date.split("-");
+      let dd = dataArray[2];
+      let mm = dataArray[1];
+      let aaaa = dataArray[0];
+      return { dd, mm, aaaa };
+    },
     convertTimeToSeconds(hh, mm, ss) {
       return parseInt(hh) * 3600 + parseInt(mm) * 60 + parseInt(ss);
+    },
+    formatTime(timestamp) {
+      let timestampSplitted = timestamp.split("T");
+      let days = timestampSplitted[0];
+      let time = timestampSplitted[1];
+
+      let daysFormatted = this.getDdMmAaaa(days);
+      let timeFormatted = this.getHhMmSs(time);
+
+      return `${daysFormatted.dd}/${daysFormatted.mm}/${daysFormatted.aaaa} à ${timeFormatted.hh}h${timeFormatted.mm}`;
+    },
+    doesImageExist(url) {
+      let http = new XMLHttpRequest();
+      http.send("HEAD", url, false);
+      http.send();
+      return http.status !== 404;
     },
   },
 };
@@ -246,11 +249,14 @@ export default {
     position: relative;
 
     & > .v-col {
-      position: relative;
-      .player-image {
-        position: absolute;
-        top: 0;
-        right: 0;
+      &.list-params {
+        position: relative;
+
+        .player-image {
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
       }
     }
   }
@@ -268,6 +274,21 @@ export default {
     }
     & > .v-row {
       width: 100%;
+      position: relative;
+
+      & > .v-row {
+        width: 100%;
+
+        .user-avatar__wrapper {
+          position: absolute;
+          right: 0;
+          top: -2px;
+
+          p {
+            font-size: 0.625rem !important;
+          }
+        }
+      }
     }
 
     .v-avatar {

@@ -34,6 +34,7 @@
           saison: activity.saison,
           episode: activity.episode,
           startWatch: activity.startWatch,
+          posterColor: activity.posterColor,
           file: {
             name: activity.fileName,
             runtime: activity.fileRuntime,
