@@ -75,8 +75,6 @@ export default {
     await this.getActivities();
     this.areActivitiesLoading = false;
 
-    console.log(this.activities);
-
     this.intervalId = setInterval(async () => {
       await this.getActivities();
     }, 10000);

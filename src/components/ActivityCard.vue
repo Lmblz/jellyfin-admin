@@ -149,18 +149,6 @@ export default {
     },
   },
 
-  mounted() {
-    console.log(this.$props.isLoading);
-  },
-
-  watch: {
-    isLoading() {
-      console.log(this.$props.isLoading);
-    },
-  },
-
-  created() {},
-
   computed: {
     getMediaPoster() {
       return `https://j.nimi.ovh/Items/${this.$props.media.posterId}/Images/Primary`;
