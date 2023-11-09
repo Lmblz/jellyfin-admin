@@ -57,7 +57,6 @@
 <script>
 import * as ActivitiesService from "../services/ActivitiesService.js";
 import ActivityCard from "../components/ActivityCard.vue";
-import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 export default {
   data() {
     return {
@@ -68,7 +67,6 @@ export default {
 
   components: {
     ActivityCard,
-    VSkeletonLoader,
   },
 
   async created() {
