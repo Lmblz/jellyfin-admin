@@ -39,8 +39,18 @@
       </v-col>
     </v-row>
     <v-row class="ma-0 px-2">
-      <p class="text-caption file-name" style="font-size: 0.625rem !important">
+      <p
+        class="text-caption file-name"
+        ref="fileName"
+        style="font-size: 0.625rem !important"
+      >
         {{ media.file.name }}
+        <v-tooltip
+          v-if="isFileNameOverflown"
+          activator="parent"
+          location="end"
+          >{{ media.file.name }}</v-tooltip
+        >
       </p>
     </v-row>
     <v-card-actions class="pa-2 pt-3 w-100 flex-wrap bg-background">
@@ -128,6 +138,7 @@ export default {
           content: this.formatTime(this.$props.media.startWatch),
         },
       ],
+      isFileNameOverflown: false,
     };
   },
 
@@ -147,6 +158,16 @@ export default {
       type: Object,
       required: true,
     },
+  },
+
+  mounted() {
+    console.log(this.$refs);
+    let fileNameElement = this.$refs.fileName;
+    let parentCard = fileNameElement.closest(".v-card");
+    if (fileNameElement.offsetWidth > parentCard.offsetWidth) {
+      fileNameElement.classList.add("-overflown");
+      this.isFileNameOverflown = true;
+    }
   },
 
   computed: {
@@ -246,13 +267,17 @@ export default {
 }
 .v-card {
   & > .v-row {
-    background: linear-gradient(90deg, #121212ff, #12121200) !important;
+    background: linear-gradient(270deg, #121212ff, #12121200 90%) !important;
     position: relative;
 
     .file-name {
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      cursor: default;
+
+      &.-overflown {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     & > .v-col {
