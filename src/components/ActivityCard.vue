@@ -10,14 +10,18 @@
   >
     <v-row class="pa-2 pb-0 ma-0">
       <v-col cols="4" class="pa-0 h-100 d-flex align-center">
-        <v-img :src="getMediaPoster" class="rounded"></v-img>
+        <v-img :src="getMediaPoster" class="rounded h-100" cover></v-img>
       </v-col>
-      <v-col cols="8" justify-self="end" class="pt-0 list-params">
+      <v-col
+        cols="8"
+        justify-self="end"
+        class="pt-0 list-params d-flex align-center"
+      >
         <v-list class="bg-transparent pa-0">
           <v-list-item
             v-for="element in listElementsInCard"
             :key="element"
-            class="pa-0"
+            class="pa-0 mb-2"
             min-height="0"
           >
             <p class="text-caption">
@@ -26,7 +30,7 @@
           </v-list-item>
         </v-list>
         <div class="player-image rounded">
-          <v-img :src="getPlayerImage" width="50">
+          <v-img :src="getPlayerImage" width="50" placeholder="coucou">
             <v-tooltip activator="parent" location="end">{{
               device.name
             }}</v-tooltip></v-img
@@ -35,7 +39,7 @@
       </v-col>
     </v-row>
     <v-row class="ma-0 px-2">
-      <p class="text-caption" style="font-size: 0.625rem !important">
+      <p class="text-caption file-name" style="font-size: 0.625rem !important">
         {{ media.file.name }}
       </p>
     </v-row>
@@ -116,8 +120,8 @@ export default {
           content: this.$props.device.appVersion,
         },
         {
-          title: "Codec",
-          content: this.$props.media.file.codec,
+          title: "Format",
+          content: this.$props.media.file.format,
         },
         {
           title: "Début de lecture",
@@ -128,6 +132,9 @@ export default {
   },
 
   props: {
+    isLoading: {
+      type: Boolean,
+    },
     user: {
       type: Object,
       required: true,
@@ -142,9 +149,15 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() {
+    console.log(this.$props.isLoading);
+  },
 
-  watch: {},
+  watch: {
+    isLoading() {
+      console.log(this.$props.isLoading);
+    },
+  },
 
   created() {},
 
@@ -247,6 +260,12 @@ export default {
   & > .v-row {
     background: linear-gradient(90deg, #121212ff, #12121200) !important;
     position: relative;
+
+    .file-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     & > .v-col {
       &.list-params {

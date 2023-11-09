@@ -39,7 +39,7 @@
             name: activity.fileName,
             runtime: activity.fileRuntime,
             library: activity.library,
-            codec: activity.fileExtraCodecInfo,
+            format: activity.format,
           },
           pause: {
             isPaused: activity.isPaused,
@@ -48,6 +48,9 @@
         }"
       />
     </v-col>
+    <h2 class="ma-2" v-if="activities.length == 0">
+      C'est bien calme par ici...
+    </h2>
   </v-row>
 </template>
 
@@ -71,6 +74,8 @@ export default {
   async created() {
     await this.getActivities();
     this.areActivitiesLoading = false;
+
+    console.log(this.activities);
 
     this.intervalId = setInterval(async () => {
       await this.getActivities();
