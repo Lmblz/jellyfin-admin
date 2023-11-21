@@ -89,9 +89,15 @@
             }}
           </p>
           <div class="user-avatar__wrapper d-flex flex-column align-center">
-            <v-avatar color="primary" size="small" class="user-avatar__image"
-              ><b>{{ user.name.split("")[0].toUpperCase() }} </b></v-avatar
-            >
+            <v-avatar color="primary" size="small" class="user-avatar__image">
+              <!-- TODO : Add profile picture wen API ready -->
+              <!-- <slot v-if="">
+                <img :src="'https://j.nimi.ovh/users/' + user.id + '/Images/Primary'"/>
+              </slot> -->
+              <b>
+                {{ user.name.split("")[0].toUpperCase() }}
+              </b>
+            </v-avatar>
             <p class="text-caption">{{ user.name }}</p>
           </div>
         </v-row>
@@ -161,7 +167,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.$refs);
     let fileNameElement = this.$refs.fileName;
     let parentCard = fileNameElement.closest(".v-card");
     if (fileNameElement.offsetWidth > parentCard.offsetWidth) {
@@ -251,12 +256,6 @@ export default {
 
       return `${daysFormatted.dd}/${daysFormatted.mm}/${daysFormatted.aaaa} à ${timeFormatted.hh}h${timeFormatted.mm}`;
     },
-    doesImageExist(url) {
-      let http = new XMLHttpRequest();
-      http.send("HEAD", url, false);
-      http.send();
-      return http.status !== 404;
-    },
   },
 };
 </script>
@@ -299,7 +298,7 @@ export default {
     .progress-bar {
       width: 100%;
       height: 2px;
-      transition: width 5s;
+      //transition: width 5s;
       position: absolute;
       top: 0;
       left: 0;

@@ -17,6 +17,7 @@
         :user="{
           name: activity.userName,
           ip: activity.ip,
+          id: activity.userId,
         }"
         :device="{
           name: activity.deviceName,
