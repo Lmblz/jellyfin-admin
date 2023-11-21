@@ -98,7 +98,7 @@
                 {{ user.name.split("")[0].toUpperCase() }}
               </b>
             </v-avatar>
-            <p class="text-caption">{{ user.name }}</p>
+            <p class="text-caption user-name">{{ user.name }}</p>
           </div>
         </v-row>
       </v-row>
@@ -314,10 +314,6 @@ export default {
           position: absolute;
           right: 0;
           top: -2px;
-
-          p {
-            font-size: 0.625rem !important;
-          }
         }
       }
     }
