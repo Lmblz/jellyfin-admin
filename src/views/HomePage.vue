@@ -9,6 +9,7 @@
       v-else
       v-for="activity in activities"
       :key="generateKey(activity.userName, activity.tmdbId)"
+      xxl="2"
       lg="3"
       md="6"
       cols="12"
