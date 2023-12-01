@@ -317,6 +317,13 @@ export default {
           position: absolute;
           right: 0;
           top: -2px;
+
+          .user-avatar__image {
+            img {
+              max-height: 100%;
+              max-width: 100%;
+            }
+          }
         }
       }
     }
