@@ -89,7 +89,12 @@
             }}
           </p>
           <div class="user-avatar__wrapper d-flex flex-column align-center">
-            <v-avatar color="primary" size="small" class="user-avatar__image">
+            <v-avatar
+              color="primary"
+              size="small"
+              class="user-avatar__image"
+              :class="user.hasPicture ? '-has-picture' : ''"
+            >
               <slot v-if="user.hasPicture">
                 <img
                   :src="
@@ -319,9 +324,13 @@ export default {
           top: -2px;
 
           .user-avatar__image {
-            img {
-              max-height: 100%;
-              max-width: 100%;
+            &.-has-picture {
+              background-color: transparent !important;
+
+              img {
+                max-height: 100%;
+                max-width: 100%;
+              }
             }
           }
         }
