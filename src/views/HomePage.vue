@@ -19,6 +19,7 @@
           name: activity.userName,
           ip: activity.ip,
           id: activity.userId,
+          hasPicture: activity.userHasPicture,
         }"
         :device="{
           name: activity.deviceName,

@@ -90,11 +90,14 @@
           </p>
           <div class="user-avatar__wrapper d-flex flex-column align-center">
             <v-avatar color="primary" size="small" class="user-avatar__image">
-              <!-- TODO : Add profile picture wen API ready -->
-              <!-- <slot v-if="">
-                <img :src="'https://j.nimi.ovh/users/' + user.id + '/Images/Primary'"/>
-              </slot> -->
-              <b>
+              <slot v-if="user.hasPicture">
+                <img
+                  :src="
+                    'https://j.nimi.ovh/users/' + user.id + '/Images/Primary'
+                  "
+                />
+              </slot>
+              <b v-else>
                 {{ user.name.split("")[0].toUpperCase() }}
               </b>
             </v-avatar>
