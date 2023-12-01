@@ -77,7 +77,7 @@ export default {
 
     this.intervalId = setInterval(async () => {
       await this.getActivities();
-    }, 10000);
+    }, 5000);
   },
 
   async mounted() {
