@@ -30,7 +30,7 @@
           </v-list-item>
         </v-list>
         <div class="player-image rounded">
-          <v-img :src="getPlayerImage" width="50" placeholder="coucou">
+          <v-img :src="getPlayerImage" width="50">
             <v-tooltip activator="parent" location="end">{{
               device.name
             }}</v-tooltip></v-img
@@ -228,9 +228,30 @@ export default {
       return new Date(timeDifference * 1000).toISOString().slice(11, 19);
     },
     getPlayerImage() {
+      let playersSupported = [
+        "Chrome",
+        "Jellyfin",
+        "iPhone",
+        "Firefox",
+        "Safari",
+      ];
+
       let player = this.$props.device.name;
-      player == "iPad" ? (player = "iPhone") : "";
+      let app = this.$props.device.appName;
       let extension = ".png";
+
+      if (!playersSupported.includes(player)) {
+        if (player.includes("DESKTOP")) {
+          player = "Jellyfin";
+        } else if (player == "iPad") {
+          player = "iPhone";
+        } else if (app == "Android TV") {
+          player = "AndroidTV";
+        } else {
+          player = "Others";
+        }
+      }
+
       let playerImagePath = "/Player-logos/" + player + extension;
       return playerImagePath;
     },
