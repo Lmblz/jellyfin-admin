@@ -73,7 +73,7 @@
           <p class="text-caption mr-2">{{ media.title }}</p>
           <slot v-if="media.type == 'tv'">
             <p class="text-caption mr-2">
-              E{{ media.episode }} - S{{ media.saison }}
+              S{{ media.saison }} - E{{ media.episode }}
             </p>
           </slot>
         </v-row>
