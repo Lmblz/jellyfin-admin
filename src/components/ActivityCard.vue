@@ -64,7 +64,7 @@
             <v-icon
               :icon="media.pause.isPaused ? 'mdi-pause' : 'mdi-play'"
               size="x-small"
-              class="mr-1"
+              class="mr-1 playing-state"
             ></v-icon>
             <v-tooltip activator="parent" location="end">{{
               media.pause.isPaused ? getPauseDuration : "En cours de lecture"
@@ -338,6 +338,10 @@ export default {
 
       & > .v-row {
         width: 100%;
+
+        .playing-state {
+          margin-top: -4px;
+        }
 
         .user-avatar__wrapper {
           position: absolute;
