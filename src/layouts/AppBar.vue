@@ -24,16 +24,20 @@ export default {
     return {
       links: [
         {
-          title: "Accueil",
+          title: "Home",
           url: "/",
         },
         {
-          title: "Librairie",
+          title: "Library",
           url: "/library",
         },
         {
-          title: "Utilisateurs",
+          title: "Users",
           url: "/users",
+        },
+        {
+          title: "History",
+          url: "/history",
         },
       ],
     };

@@ -3,7 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import HomePage from "../views/HomePage.vue";
 const Library = () => import("../views/LibraryView.vue");
-const Users = () => ("../views/UsersView.vue");
+const Users = () => import("../views/UsersView.vue");
+const History = () => import("../views/HistoryView.vue");
 
 const routes = [
   {
@@ -30,6 +31,12 @@ const routes = [
     name: 'Users',
     alias: '/users',
     component: Users,
+  },
+  {
+    path: '/history',
+    name: 'History',
+    alias: '/history',
+    component: History,
   }
 ]
 
