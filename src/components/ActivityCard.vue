@@ -70,7 +70,15 @@
               media.pause.isPaused ? getPauseDuration : "En cours de lecture"
             }}</v-tooltip>
           </div>
-          <p class="text-caption mr-2">{{ media.title }}</p>
+          <p class="text-caption mr-2 media-title" ref="mediaTitle">
+            <v-tooltip
+              v-if="isMediaTitleOverflown"
+              activator="parent"
+              location="end"
+              >{{ media.title }}</v-tooltip
+            >
+            {{ media.title }}
+          </p>
           <slot v-if="media.type == 'tv'">
             <p class="text-caption mr-2">
               S{{ media.saison }} - E{{ media.episode }}
@@ -153,6 +161,7 @@ export default {
         },
       ],
       isFileNameOverflown: false,
+      isMediaTitleOverflown: false,
     };
   },
 
@@ -180,6 +189,19 @@ export default {
     if (fileNameElement.offsetWidth > parentCard.offsetWidth) {
       fileNameElement.classList.add("-overflown");
       this.isFileNameOverflown = true;
+    }
+
+    let mediaTitleElement = this.$refs.mediaTitle;
+    let parentRow = mediaTitleElement.closest(
+      ".v-card-actions > .v-row > .v-row"
+    );
+    if (
+      mediaTitleElement.offsetWidth +
+        mediaTitleElement.previousSibling.offsetWidth >
+      parentRow.offsetWidth
+    ) {
+      mediaTitleElement.classList.add("-overflown");
+      this.isMediaTitleOverflown = true;
     }
   },
 
@@ -327,7 +349,6 @@ export default {
     .progress-bar {
       width: 100%;
       height: 2px;
-      //transition: width 5s;
       position: absolute;
       top: 0;
       left: 0;
@@ -338,9 +359,22 @@ export default {
 
       & > .v-row {
         width: 100%;
+        max-width: calc(100% - 40px);
+        flex-wrap: nowrap;
 
         .playing-state {
           margin-top: -4px;
+        }
+
+        .media-title {
+          white-space: pre;
+
+          &.-overflown {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 1.25rem;
+            white-space: nowrap;
+          }
         }
 
         .user-avatar__wrapper {
