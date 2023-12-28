@@ -13,8 +13,6 @@ export default {
   components: {
     AppBar,
   },
-  mounted() {
-    console.log(process);
-  },
+  mounted() {},
 };
 </script>
