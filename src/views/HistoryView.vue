@@ -3,16 +3,6 @@
     <v-card-title class="d-flex align-center">
       <p>History</p>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        label="Search"
-        density="compact"
-        flat
-        prepend-inner-icon="mdi-magnify"
-        single-line
-        variant="solo-filled"
-        hide-details
-      ></v-text-field>
     </v-card-title>
 
     <v-divider></v-divider>
@@ -48,42 +38,52 @@ export default {
         {
           title: "Date",
           key: "startWatchDateFormatted",
+          sortable: false,
         },
         {
           title: "User",
           key: "userName",
+          sortable: false,
         },
         {
           title: "Ip",
           key: "ip",
+          sortable: false,
         },
         {
           title: "Player",
           key: "deviceName",
+          sortable: false,
         },
         {
           title: "Device",
           key: "deviceAppName",
+          sortable: false,
         },
         {
           title: "Media title",
           key: "title",
+          sortable: false,
         },
         {
           title: "Started time",
           key: "startWatchTimeFormatted",
+          sortable: false,
         },
         {
           title: "Paused duration",
           key: "pauseDurationFormatted",
+          sortable: false,
         },
         {
           title: "Watched duration",
           key: "watchedDurationFormatted",
+          sortable: false,
         },
         {
           title: "Stopped time",
           key: "stoppedTimeFormatted",
+          sortable: false,
         },
       ],
     };
@@ -92,19 +92,17 @@ export default {
     //this.getHistory(`?nb=${this.itemsPerPage}&start=0`);
   },
   methods: {
-    async test() {},
     async getHistory(params, event) {
-      console.log(event);
+      this.isHistoryLoading = true;
+      this.historyResults = [];
+      this.historyResultsFormatted = [];
       try {
         this.history = await HistoryService.get(
           `?nb=${event.itemsPerPage}&start=${
             event.page * event.itemsPerPage - event.itemsPerPage
           }`
         );
-        console.log(this.history);
         this.totalItems = this.history.count;
-        this.historyResults = [];
-        this.historyResultsFormatted = [];
         this.history.results.forEach((item) => {
           this.historyResults.push(item);
           this.historyResultsFormatted.push(this.formatHistoryResult(item));
@@ -115,7 +113,6 @@ export default {
         console.log(e);
         this.isHistoryLoading = false;
       }
-      console.log(this.history);
     },
     formatHistoryResult(item) {
       // Date format
@@ -176,4 +173,22 @@ export default {
   },
 };
 </script>
-<style lang=""></style>
+
+<style lang="scss">
+.v-card {
+  .v-table {
+    height: calc(100vh - 128px);
+    &__wrapper {
+      .v-data-table__thead {
+        background: #333;
+        position: sticky;
+        top: 0;
+        box-shadow: #0000004f 0px 3px 3px 1px;
+      }
+    }
+    .v-data-table-footer {
+      justify-content: space-between;
+    }
+  }
+}
+</style>
