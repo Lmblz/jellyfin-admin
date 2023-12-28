@@ -1,31 +1,35 @@
 <template>
-  <!-- <div>
-    <h1>coucou</h1>
-    <p>Nb de résultats : {{ history.count }}</p>
-    <p>Nb de résultats affiché : {{ history.nb }}</p>
-    <p v-for="result in history.results" :key="result.id">
-      Item : {{ result }}
-    </p>
-  </div> -->
-  <v-data-table
-    :headers="headers"
-    :items="this.historyResultsFormatted"
-    :items-per-page="itemsPerPage"
-    :search="search"
-  >
-    <template v-slot:top>
-      <!-- <v-text-field
-        :model-value="itemsPerPage"
-        class="pa-2"
+  <v-card flat class="mt-2">
+    <v-card-title class="d-flex align-center">
+      <p>History</p>
+      <v-spacer></v-spacer>
+      <v-text-field
+        v-model="search"
+        label="Search"
+        density="compact"
+        flat
+        prepend-inner-icon="mdi-magnify"
+        single-line
+        variant="solo-filled"
         hide-details
-        label="Items per page"
-        min="1"
-        max="100"
-        type="number"
-        @update:model-value="itemsPerPage = parseInt($event, 10)"
-      ></v-text-field> -->
-    </template>
-  </v-data-table>
+      ></v-text-field>
+    </v-card-title>
+
+    <v-divider></v-divider>
+
+    <v-data-table-server
+      :headers="headers"
+      :items="this.historyResultsFormatted"
+      :items-per-page="itemsPerPage"
+      :search="search"
+      :items-length="totalItems"
+      :loading="isHistoryLoading"
+      @update:options="
+        getHistory(`?nb=${this.itemsPerPage}&start=${startItem}`, $event)
+      "
+    >
+    </v-data-table-server>
+  </v-card>
 </template>
 <script>
 import * as HistoryService from "../services/HistoryService.js";
@@ -36,7 +40,10 @@ export default {
       historyResults: [],
       historyResultsFormatted: [],
       itemsPerPage: 25,
+      totalItems: 0,
       search: "",
+      isHistoryLoading: true,
+      startItem: 0,
       headers: [
         {
           title: "Date",
@@ -82,18 +89,31 @@ export default {
     };
   },
   mounted() {
-    this.getHistory();
+    //this.getHistory(`?nb=${this.itemsPerPage}&start=0`);
   },
   methods: {
-    async getHistory() {
+    async test() {},
+    async getHistory(params, event) {
+      console.log(event);
       try {
-        this.history = await HistoryService.getAll("?nb=50&start=0");
+        this.history = await HistoryService.get(
+          `?nb=${event.itemsPerPage}&start=${
+            event.page * event.itemsPerPage - event.itemsPerPage
+          }`
+        );
+        console.log(this.history);
+        this.totalItems = this.history.count;
+        this.historyResults = [];
+        this.historyResultsFormatted = [];
         this.history.results.forEach((item) => {
           this.historyResults.push(item);
           this.historyResultsFormatted.push(this.formatHistoryResult(item));
         });
+        this.isHistoryLoading = false;
+        this.startItem += 25;
       } catch (e) {
         console.log(e);
+        this.isHistoryLoading = false;
       }
       console.log(this.history);
     },
