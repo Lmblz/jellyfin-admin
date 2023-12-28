@@ -3,23 +3,54 @@
     <v-card-title class="d-flex align-center">
       <p>History</p>
       <v-spacer></v-spacer>
+      <!-- <v-select
+        label="Sort by"
+        :items="[
+          'California',
+          'Colorado',
+          'Florida',
+          'Georgia',
+          'Texas',
+          'Wyoming',
+        ]"
+      ></v-select> -->
+      <button @click="showDatePicker = true">Show datepicker</button>
+      <v-dialog width="500">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" text="Open Dialog"> </v-btn>
+        </template>
+
+        <template v-slot:default="{ isActive }">
+          <v-card title="Dialog">
+            <v-date-picker
+              @update:modelValue="sortDatePicker($event)"
+            ></v-date-picker>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                text="Close Dialog"
+                @click="isActive.value = false"
+              ></v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
     </v-card-title>
 
     <v-divider></v-divider>
 
     <v-data-table-server
       density="comfortable"
-      hover="true"
+      :hover="true"
       fixed-header
       :headers="headers"
       :items="this.historyResultsFormatted"
       :items-per-page="itemsPerPage"
-      :search="search"
       :items-length="totalItems"
       :loading="isHistoryLoading"
-      @update:options="
-        getHistory(`?nb=${this.itemsPerPage}&start=${startItem}`, $event)
-      "
+      @update:options="sortPagination($event)"
     >
     </v-data-table-server>
   </v-card>
@@ -34,9 +65,8 @@ export default {
       historyResultsFormatted: [],
       itemsPerPage: 25,
       totalItems: 0,
-      search: "",
       isHistoryLoading: true,
-      startItem: 0,
+      showDatePicker: false,
       headers: [
         {
           title: "Date",
@@ -91,27 +121,20 @@ export default {
       ],
     };
   },
-  mounted() {
-    //this.getHistory(`?nb=${this.itemsPerPage}&start=0`);
-  },
+  mounted() {},
   methods: {
-    async getHistory(params, event) {
+    async getHistory(params) {
       this.isHistoryLoading = true;
       this.historyResults = [];
       this.historyResultsFormatted = [];
       try {
-        this.history = await HistoryService.get(
-          `?nb=${event.itemsPerPage}&start=${
-            event.page * event.itemsPerPage - event.itemsPerPage
-          }`
-        );
+        this.history = await HistoryService.get(params);
         this.totalItems = this.history.count;
         this.history.results.forEach((item) => {
           this.historyResults.push(item);
           this.historyResultsFormatted.push(this.formatHistoryResult(item));
         });
         this.isHistoryLoading = false;
-        this.startItem += 25;
       } catch (e) {
         console.log(e);
         this.isHistoryLoading = false;
@@ -165,6 +188,17 @@ export default {
       item.stoppedTimeFormatted = stoppedTimeFormatted;
 
       return item;
+    },
+    sortPagination(event) {
+      let page = event.page;
+      let itemsPerPage = event.itemsPerPage;
+      this.getHistory(`?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}`);
+    },
+    sortDatePicker(event) {
+      let dateToSort = event.toISOString().split("T")[0];
+      let itemsPerPage = this.itemsPerPage;
+      console.log(dateToSort);
+      this.getHistory(`?start=0&nb=${itemsPerPage}&dateStart=${dateToSort}`);
     },
     getTimeInSeconds(time) {
       let hh = parseInt(time.split(":")[0]),
