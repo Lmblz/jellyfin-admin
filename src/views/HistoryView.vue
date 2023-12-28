@@ -8,6 +8,9 @@
     <v-divider></v-divider>
 
     <v-data-table-server
+      density="comfortable"
+      hover="true"
+      fixed-header
       :headers="headers"
       :items="this.historyResultsFormatted"
       :items-per-page="itemsPerPage"
@@ -180,9 +183,6 @@ export default {
     height: calc(100vh - 128px);
     &__wrapper {
       .v-data-table__thead {
-        background: #333;
-        position: sticky;
-        top: 0;
         box-shadow: #0000004f 0px 3px 3px 1px;
       }
     }
