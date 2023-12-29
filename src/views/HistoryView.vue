@@ -45,6 +45,8 @@
           (dateToFilter = null),
             (isFilteredByDate = false),
             (isAscending = false),
+            (dateStartFilter = null),
+            (dateEndFilter = null),
             getHistory(`?start=0&nb=${itemsPerPage}&isASc=${isAscending}`)
         "
         >Delete filter</v-btn
@@ -233,7 +235,9 @@ export default {
     },
 
     filterDatePicker(event) {
-      let dateToFilter = event.toISOString().split("T")[0];
+      let dateToFilter = new Date(event.setDate(event.getDate() + 1))
+        .toISOString()
+        .split("T")[0];
       this.dateToFilter = dateToFilter;
       let itemsPerPage = this.itemsPerPage;
       this.isAscending = true;
@@ -274,6 +278,7 @@ export default {
           }
 
           if (dateStart !== null && dateEnd !== null) {
+            this.isFilteredByDate = true;
             this.dateStartFilter = dateStart;
             this.dateEndFilter = dateEnd;
             this.getHistory(
