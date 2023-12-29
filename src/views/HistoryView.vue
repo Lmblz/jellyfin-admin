@@ -3,27 +3,29 @@
     <v-card-title class="d-flex align-center">
       <p>History</p>
       <v-spacer></v-spacer>
-      <!-- <v-select
-        label="Sort by"
-        :items="[
-          'California',
-          'Colorado',
-          'Florida',
-          'Georgia',
-          'Texas',
-          'Wyoming',
-        ]"
-      ></v-select> -->
-      <button @click="showDatePicker = true">Show datepicker</button>
-      <v-dialog width="500">
+      <v-select
+        density="compact"
+        :items="quickFilters"
+        label="Quick filters"
+        variant="outlined"
+        clearable
+        :single-line="true"
+        @click:clear="fiterWithQuickFilters($event)"
+        @update:modelValue="fiterWithQuickFilters($event)"
+      >
+      </v-select>
+      <v-dialog width="auto">
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" text="Open Dialog"> </v-btn>
+          <v-btn v-bind="props" text="Filter by Date"> </v-btn>
         </template>
 
         <template v-slot:default="{ isActive }">
-          <v-card title="Dialog">
+          <v-card>
             <v-date-picker
-              @update:modelValue="sortDatePicker($event)"
+              @update:modelValue="
+                filterDatePicker($event), (isActive.value = false)
+              "
+              :max="new Date()"
             ></v-date-picker>
 
             <v-card-actions>
@@ -37,6 +39,16 @@
           </v-card>
         </template>
       </v-dialog>
+      <v-btn
+        v-if="isFilteredByDate"
+        @click="
+          (dateToFilter = null),
+            (isFilteredByDate = false),
+            (isAscending = false),
+            getHistory(`?start=0&nb=${itemsPerPage}&isASc=${isAscending}`)
+        "
+        >Delete filter</v-btn
+      >
     </v-card-title>
 
     <v-divider></v-divider>
@@ -66,7 +78,12 @@ export default {
       itemsPerPage: 25,
       totalItems: 0,
       isHistoryLoading: true,
-      showDatePicker: false,
+      dateToFilter: null,
+      isFilteredByDate: false,
+      dateStartFilter: null,
+      dateEndFilter: null,
+      isAscending: false,
+      quickFilters: ["Today", "Yesterday", "Last week"],
       headers: [
         {
           title: "Date",
@@ -127,6 +144,7 @@ export default {
       this.isHistoryLoading = true;
       this.historyResults = [];
       this.historyResultsFormatted = [];
+
       try {
         this.history = await HistoryService.get(params);
         this.totalItems = this.history.count;
@@ -140,6 +158,7 @@ export default {
         this.isHistoryLoading = false;
       }
     },
+
     formatHistoryResult(item) {
       // Date format
       let startWatchWithoutTime = item.startWatch.split("T")[0],
@@ -189,17 +208,83 @@ export default {
 
       return item;
     },
+
     sortPagination(event) {
       let page = event.page;
       let itemsPerPage = event.itemsPerPage;
-      this.getHistory(`?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}`);
+
+      if (this.dateToFilter !== null) {
+        this.getHistory(
+          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
+            this.dateToFilter
+          }&isASc=${this.isAscending}`
+        );
+      } else if (this.dateEndFilter !== null && this.dateStartFilter !== null) {
+        this.getHistory(
+          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
+            this.dateStartFilter
+          }&dateEnd=${this.dateEndFilter}`
+        );
+      } else {
+        this.getHistory(
+          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}`
+        );
+      }
     },
-    sortDatePicker(event) {
-      let dateToSort = event.toISOString().split("T")[0];
+
+    filterDatePicker(event) {
+      let dateToFilter = event.toISOString().split("T")[0];
+      this.dateToFilter = dateToFilter;
       let itemsPerPage = this.itemsPerPage;
-      console.log(dateToSort);
-      this.getHistory(`?start=0&nb=${itemsPerPage}&dateStart=${dateToSort}`);
+      this.isAscending = true;
+      let isAscending = this.isAscending;
+      this.getHistory(
+        `?start=0&nb=${itemsPerPage}&dateStart=${dateToFilter}&isASc=${isAscending}`
+      );
+      this.isFilteredByDate = true;
     },
+
+    fiterWithQuickFilters(event) {
+      if (event !== null) {
+        console.log(event);
+        if (typeof event == "string") {
+          let dateStart = null;
+          let dateEnd = null;
+          if (event == "Today") {
+            dateStart = new Date().toISOString().split("T")[0];
+            dateEnd = ((d) => new Date(d.setDate(d.getDate() + 1)))(new Date())
+              .toISOString()
+              .split("T")[0];
+          } else if (event == "Yesterday") {
+            dateStart = ((d) => new Date(d.setDate(d.getDate() - 1)))(
+              new Date()
+            )
+              .toISOString()
+              .split("T")[0];
+            dateEnd = new Date().toISOString().split("T")[0];
+          } else if (event == "Last week") {
+            dateStart = ((d) => new Date(d.setDate(d.getDate() - 14)))(
+              new Date()
+            )
+              .toISOString()
+              .split("T")[0];
+            dateEnd = ((d) => new Date(d.setDate(d.getDate() - 7)))(new Date())
+              .toISOString()
+              .split("T")[0];
+          }
+
+          if (dateStart !== null && dateEnd !== null) {
+            this.dateStartFilter = dateStart;
+            this.dateEndFilter = dateEnd;
+            this.getHistory(
+              `?start=0&nb=${this.itemsPerPage}&dateStart=${dateStart}&dateEnd=${dateEnd}`
+            );
+          }
+        } else if (typeof event == "object") {
+        }
+      }
+    },
+
     getTimeInSeconds(time) {
       let hh = parseInt(time.split(":")[0]),
         mm = parseInt(time.split(":")[1]),
@@ -213,6 +298,13 @@ export default {
 
 <style lang="scss">
 .v-card {
+  &-title {
+    .v-input {
+      &__details {
+        display: none;
+      }
+    }
+  }
   .v-table {
     height: calc(100vh - 128px);
     &__wrapper {
