@@ -1,7 +1,7 @@
 <template>
   <v-row class="ma-0">
     <slot v-if="areActivitiesLoading">
-      <v-col v-for="i in 3" :key="i" cols="4">
+      <v-col v-for="i in 3" :key="i" xxl="2" lg="3" md="6" cols="12">
         <v-skeleton-loader type="card" class="overflow-hidden" />
       </v-col>
     </slot>
