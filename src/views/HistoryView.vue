@@ -201,7 +201,12 @@ export default {
 
       // Pause duration format
       let pauseDurationWithoutMS = item.pauseDuration.split(".")[0];
-      item.pauseDurationFormatted = pauseDurationWithoutMS;
+      let splittedPauseDuration = pauseDurationWithoutMS.split(":");
+      let pauseDurationInMin =
+        parseInt(splittedPauseDuration[0]) * 60 +
+        parseInt(splittedPauseDuration[1]);
+      pauseDurationInMin == 0 ? (pauseDurationInMin = "/") : "";
+      item.pauseDurationFormatted = pauseDurationInMin;
 
       // Watched duration format
       let totalDurationWithoutMS = item.fileRuntime.split(".")[0],
