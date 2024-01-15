@@ -62,6 +62,7 @@
       :headers="headers"
       :items="this.historyResultsFormatted"
       :items-per-page="itemsPerPage"
+      :items-per-page-options="itemsPerPageOptions"
       :items-length="totalItems"
       :loading="isHistoryLoading"
       @update:options="sortPagination($event)"
@@ -101,6 +102,7 @@ export default {
       historyResults: [],
       historyResultsFormatted: [],
       itemsPerPage: 25,
+      itemsPerPageOptions: [10, 20, 50, 100],
       totalItems: 0,
       isHistoryLoading: true,
       dateToFilter: null,
