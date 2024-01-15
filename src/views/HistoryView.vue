@@ -285,7 +285,6 @@ export default {
               `?start=0&nb=${this.itemsPerPage}&dateStart=${dateStart}&dateEnd=${dateEnd}`
             );
           }
-        } else if (typeof event == "object") {
         }
       }
     },

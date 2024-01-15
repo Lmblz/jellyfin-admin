@@ -9,7 +9,7 @@
     :style="{ background: media.posterColor }"
   >
     <v-row class="pa-2 pb-0 ma-0">
-      <v-col cols="4" class="pa-0 h-100 d-flex align-center">
+      <v-col cols="4" class="pa-0 h-100 d-flex align-center movie-image">
         <v-img :src="getMediaPoster" class="rounded h-100" cover></v-img>
       </v-col>
       <v-col
@@ -319,6 +319,12 @@ export default {
   & > .v-row {
     background: linear-gradient(270deg, #121212ff, #12121200 90%) !important;
     position: relative;
+
+    .movie-image {
+      img {
+        aspect-ratio: 150 / 225;
+      }
+    }
 
     .file-name {
       white-space: nowrap;
