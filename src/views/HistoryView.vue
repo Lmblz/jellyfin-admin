@@ -195,21 +195,24 @@ export default {
       item.startWatchDateFormatted = `${dd}/${mm}/${aaaa}`;
 
       // Time start format
-      let startWatchWithoutDate = item.startWatch.split("T")[1],
-        startWatchWhithoutMS = startWatchWithoutDate.split(".")[0];
-      item.startWatchTimeFormatted = startWatchWhithoutMS;
+      const startWatchWithoutDate = item.startWatch.split("T")[1],
+        startWatchWhithoutMS = startWatchWithoutDate.split(".")[0],
+        startWatchWithoutMSSplitted = startWatchWhithoutMS.split(":"),
+        startWatchInSec =
+          startWatchWithoutMSSplitted[0] + "h" + startWatchWithoutMSSplitted[1];
+      item.startWatchTimeFormatted = startWatchInSec;
 
       // Pause duration format
-      let pauseDurationWithoutMS = item.pauseDuration.split(".")[0];
-      let splittedPauseDuration = pauseDurationWithoutMS.split(":");
-      let pauseDurationInMin =
-        parseInt(splittedPauseDuration[0]) * 60 +
-        parseInt(splittedPauseDuration[1]);
+      let pauseDurationWithoutMS = item.pauseDuration.split(".")[0],
+        splittedPauseDuration = pauseDurationWithoutMS.split(":"),
+        pauseDurationInMin =
+          parseInt(splittedPauseDuration[0]) * 60 +
+          parseInt(splittedPauseDuration[1]);
       pauseDurationInMin == 0 ? (pauseDurationInMin = "/") : "";
       item.pauseDurationFormatted = pauseDurationInMin;
 
       // Watched duration format
-      let totalDurationWithoutMS = item.fileRuntime.split(".")[0],
+      const totalDurationWithoutMS = item.fileRuntime.split(".")[0],
         totalDurationInSecond = this.getTimeInSeconds(totalDurationWithoutMS),
         remainingTimeWithoutMS = item.remaningTime.split(".")[0],
         remainingTimeInSecond = this.getTimeInSeconds(remainingTimeWithoutMS),
@@ -223,18 +226,16 @@ export default {
       item.watchedDurationFormatted = watchedDurationFormatted;
 
       // Stopped time format
-      let startTimeInSeconds = this.getTimeInSeconds(startWatchWhithoutMS),
-        pauseDurationInSeconds = this.getTimeInSeconds(pauseDurationWithoutMS),
-        watchedDurationInSeconds = this.getTimeInSeconds(
-          watchedDurationFormatted
-        );
+      const startTimeInSeconds = this.getTimeInSeconds(startWatchWhithoutMS),
+        pauseDurationInSeconds = this.getTimeInSeconds(pauseDurationWithoutMS);
 
       const dateStoppedTime = new Date(null);
-      dateStoppedTime.setSeconds(
-        startTimeInSeconds + pauseDurationInSeconds + watchedDurationInSeconds
-      );
+      dateStoppedTime.setSeconds(startTimeInSeconds + pauseDurationInSeconds);
       const stoppedTimeFormatted = dateStoppedTime.toISOString().slice(11, 19);
-      item.stoppedTimeFormatted = stoppedTimeFormatted;
+      const stoppedTimeSplited = stoppedTimeFormatted.split(":"),
+        stoppedTimeFormattedWithoutSec =
+          stoppedTimeSplited[0] + "h" + stoppedTimeSplited[1];
+      item.stoppedTimeFormatted = stoppedTimeFormattedWithoutSec;
 
       return item;
     },
