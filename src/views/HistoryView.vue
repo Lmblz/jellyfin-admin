@@ -66,6 +66,29 @@
       :loading="isHistoryLoading"
       @update:options="sortPagination($event)"
     >
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.userName="{ item }">
+        <div class="d-flex align-center">
+          <v-avatar
+            color="primary"
+            size="small"
+            class="user-avatar__image"
+            :class="item.userHasPicture ? '-has-picture' : ''"
+          >
+            <slot v-if="item.userHasPicture">
+              <v-img
+                :src="
+                  'https://j.nimi.ovh/users/' + item.userId + '/Images/Primary'
+                "
+              />
+            </slot>
+            <b v-else>
+              {{ item.userName.split("")[0].toUpperCase() }}
+            </b>
+          </v-avatar>
+          <p class="ml-2">{{ item.userName }}</p>
+        </div>
+      </template>
     </v-data-table-server>
   </v-card>
 </template>
