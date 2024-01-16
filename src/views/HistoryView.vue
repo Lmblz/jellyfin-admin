@@ -246,9 +246,20 @@ export default {
       item.watchedDurationFormatted = watchDurationFormatted;
 
       // Stopped time format
-      const endTimeDate = new Date(item.endWatch),
-        stoppedTimeFormattedWithoutSec =
-          endTimeDate.getHours() + "h" + endTimeDate.getMinutes();
+      const endTimeDate = new Date(item.endWatch);
+      let stoppedTimeHours = endTimeDate.getHours(),
+        stoppedTimeMinutes = endTimeDate.getMinutes();
+
+      if (stoppedTimeHours < 10) {
+        stoppedTimeHours = "0" + stoppedTimeHours;
+      }
+
+      if (stoppedTimeMinutes < 10) {
+        stoppedTimeMinutes = "0" + stoppedTimeMinutes;
+      }
+
+      const stoppedTimeFormattedWithoutSec =
+        stoppedTimeHours + "h" + stoppedTimeMinutes;
       item.stoppedTimeFormatted = stoppedTimeFormattedWithoutSec;
 
       return item;
