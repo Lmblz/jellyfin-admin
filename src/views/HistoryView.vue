@@ -181,7 +181,7 @@ export default {
         });
         this.isHistoryLoading = false;
       } catch (e) {
-        console.log(e);
+        console.error(e);
         this.isHistoryLoading = false;
       }
     },
@@ -220,10 +220,9 @@ export default {
         totalDurationInSecond = this.getTimeInSeconds(totalDurationWithoutMS),
         remainingTimeWithoutMS = item.remaningTime.split(".")[0],
         remainingTimeInSecond = this.getTimeInSeconds(remainingTimeWithoutMS),
-        seconds = totalDurationInSecond - remainingTimeInSecond;
-      console.log(Math.floor(seconds / 60));
+        watchTimeInSecond = totalDurationInSecond - remainingTimeInSecond;
 
-      const watchDurationInMin = Math.floor(seconds / 60);
+      const watchDurationInMin = Math.floor(watchTimeInSecond / 60);
       let watchDurationFormatted;
       if (watchDurationInMin >= 60) {
         watchDurationFormatted =
@@ -237,15 +236,9 @@ export default {
       item.watchedDurationFormatted = watchDurationFormatted;
 
       // Stopped time format
-      const startTimeInSeconds = this.getTimeInSeconds(startWatchWhithoutMS),
-        pauseDurationInSeconds = this.getTimeInSeconds(pauseDurationWithoutMS);
-
-      const dateStoppedTime = new Date(null);
-      dateStoppedTime.setSeconds(startTimeInSeconds + pauseDurationInSeconds);
-      const stoppedTimeFormatted = dateStoppedTime.toISOString().slice(11, 19);
-      const stoppedTimeSplited = stoppedTimeFormatted.split(":"),
+      const endTimeDate = new Date(item.endWatch),
         stoppedTimeFormattedWithoutSec =
-          stoppedTimeSplited[0] + "h" + stoppedTimeSplited[1];
+          endTimeDate.getHours() + "h" + endTimeDate.getMinutes();
       item.stoppedTimeFormatted = stoppedTimeFormattedWithoutSec;
 
       return item;
@@ -290,7 +283,6 @@ export default {
 
     fiterWithQuickFilters(event) {
       if (event !== null) {
-        console.log(event);
         if (typeof event == "string") {
           let dateStart = null;
           let dateEnd = null;
