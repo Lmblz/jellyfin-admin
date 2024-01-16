@@ -25,6 +25,7 @@
           name: activity.deviceName,
           appName: activity.deviceAppName,
           appVersion: activity.deviceAppVersion,
+          logo: activity.deviceLogo,
         }"
         :media="{
           id: activity.tmdbId,
