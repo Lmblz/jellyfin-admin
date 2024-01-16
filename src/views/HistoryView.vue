@@ -71,7 +71,7 @@
       <template v-slot:item.userName="{ item }">
         <div class="d-flex align-center">
           <v-avatar
-            color="primary"
+            :color="item.userHasPicture ? '' : 'primary'"
             size="small"
             class="user-avatar__image"
             :class="item.userHasPicture ? '-has-picture' : ''"
