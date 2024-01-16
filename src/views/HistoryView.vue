@@ -67,6 +67,16 @@
       :loading="isHistoryLoading"
       @update:options="sortPagination($event)"
     >
+      <!-- eslint-disable-next-line vue/valid-v-slot -->
+      <template v-slot:item.title="{ item }">
+        <p>
+          {{ item.title }}
+          <slot v-if="item.mediaType == 'tv'"
+            >- S{{ item.saison }} - E{{ item.episode }}</slot
+          >
+        </p>
+      </template>
+
       <!-- eslint-disable-next-line -->
       <template v-slot:item.userName="{ item }">
         <div class="d-flex align-center">
