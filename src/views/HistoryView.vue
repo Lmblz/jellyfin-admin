@@ -148,12 +148,12 @@ export default {
           sortable: false,
         },
         {
-          title: "Paused duration",
+          title: "Paused",
           key: "pauseDurationFormatted",
           sortable: false,
         },
         {
-          title: "Watched duration",
+          title: "Duration",
           key: "watchedDurationFormatted",
           sortable: false,
         },
@@ -210,7 +210,9 @@ export default {
         pauseDurationInMin =
           parseInt(splittedPauseDuration[0]) * 60 +
           parseInt(splittedPauseDuration[1]);
-      pauseDurationInMin == 0 ? (pauseDurationInMin = "/") : "";
+      pauseDurationInMin == 0
+        ? (pauseDurationInMin = "/")
+        : (pauseDurationInMin = pauseDurationInMin + "m");
       item.pauseDurationFormatted = pauseDurationInMin;
 
       // Watched duration format
@@ -219,13 +221,20 @@ export default {
         remainingTimeWithoutMS = item.remaningTime.split(".")[0],
         remainingTimeInSecond = this.getTimeInSeconds(remainingTimeWithoutMS),
         seconds = totalDurationInSecond - remainingTimeInSecond;
+      console.log(Math.floor(seconds / 60));
 
-      const dateWatchDuration = new Date(null);
-      dateWatchDuration.setSeconds(seconds);
-      const watchedDurationFormatted = dateWatchDuration
-        .toISOString()
-        .slice(11, 19);
-      item.watchedDurationFormatted = watchedDurationFormatted;
+      const watchDurationInMin = Math.floor(seconds / 60);
+      let watchDurationFormatted;
+      if (watchDurationInMin >= 60) {
+        watchDurationFormatted =
+          Math.floor(watchDurationInMin / 60) +
+          "h " +
+          (watchDurationInMin % 60) +
+          "m";
+      } else {
+        watchDurationFormatted = watchDurationInMin + "m";
+      }
+      item.watchedDurationFormatted = watchDurationFormatted;
 
       // Stopped time format
       const startTimeInSeconds = this.getTimeInSeconds(startWatchWhithoutMS),
