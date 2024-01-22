@@ -60,7 +60,7 @@
       ></div>
       <v-row class="ma-0 align-center">
         <v-row class="ma-0 align-center">
-          <div>
+          <div ref="playState">
             <v-icon
               :icon="media.pause.isPaused ? 'mdi-pause' : 'mdi-play'"
               size="x-small"
@@ -80,7 +80,7 @@
             {{ media.title }}
           </p>
           <slot v-if="media.type == 'tv'">
-            <p class="text-caption mr-2">
+            <p class="text-caption mr-2 show-episode" ref="showEpisode">
               S{{ media.saison }} - E{{ media.episode }}
             </p>
           </slot>
@@ -195,7 +195,18 @@ export default {
     let parentRow = mediaTitleElement.closest(
       ".v-card-actions > .v-row > .v-row"
     );
-    if (
+
+    if (mediaTitleElement.nextElementSibling) {
+      if (
+        mediaTitleElement.offsetWidth +
+          mediaTitleElement.previousSibling.offsetWidth +
+          mediaTitleElement.nextElementSibling.offsetWidth >
+        parentRow.offsetWidth
+      ) {
+        mediaTitleElement.classList.add("-overflown");
+        this.isMediaTitleOverflown = true;
+      }
+    } else if (
       mediaTitleElement.offsetWidth +
         mediaTitleElement.previousSibling.offsetWidth >
       parentRow.offsetWidth
@@ -357,6 +368,10 @@ export default {
             height: 1.25rem;
             white-space: nowrap;
           }
+        }
+
+        .show-episode {
+          white-space: nowrap;
         }
 
         .user-avatar__wrapper {
