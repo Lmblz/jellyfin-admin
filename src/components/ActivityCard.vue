@@ -389,6 +389,12 @@ export default {
               }
             }
           }
+
+          .user-name {
+            position: absolute;
+            top: 2rem;
+            right: 0;
+          }
         }
       }
     }
