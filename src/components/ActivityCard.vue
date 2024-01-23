@@ -394,6 +394,7 @@ export default {
             position: absolute;
             top: 2rem;
             right: 0;
+            white-space: nowrap;
           }
         }
       }
