@@ -67,6 +67,9 @@
               class="mr-1 playing-state"
               :id="'sessionActivator-' + $props.activityId"
             ></v-icon>
+            <v-tooltip activator="parent" location="end">{{
+              media.pause.isPaused ? getPauseDuration : "Currently playing"
+            }}</v-tooltip>
             <v-menu
               transition="slide-y-transition"
               :activator="'#sessionActivator-' + $props.activityId"
@@ -77,7 +80,19 @@
                   :key="index"
                   @click="service.value"
                 >
-                  <v-list-item-title>{{ service.title }}</v-list-item-title>
+                  <v-list-item-title class="d-flex align-center"
+                    ><v-icon
+                      :icon="service.icon"
+                      size="x-small"
+                      class="mr-2"
+                      :style="{
+                        fontSize: service.fontSize + 'px',
+                        width: '16px',
+                      }"
+                      width="16"
+                    ></v-icon
+                    >{{ service.title }}</v-list-item-title
+                  >
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -179,21 +194,27 @@ export default {
         {
           id: "Pause",
           title: "Pause Session",
+          icon: "mdi-play",
           value: () => SessionService.sessionPause(this.$props.activityId),
         },
         {
           id: "Play",
           title: "Play Session",
+          icon: "mdi-pause",
           value: () => SessionService.sessionStart(this.$props.activityId),
         },
         {
           id: "Stop",
           title: "Stop Session",
+          icon: "mdi-square",
+          fontSize: 11,
           value: () => SessionService.sessionStop(this.$props.activityId),
         },
         {
           id: "StopAll",
           title: "Stop All Sessions",
+          icon: "mdi-bell-alert",
+          fontSize: 11,
           value: () => this.emitStopAllSessions(),
         },
       ],
@@ -267,11 +288,11 @@ export default {
         : "";
 
       if (timeFormatted.hh !== "00") {
-        return `Durée de la pause : ${timeFormatted.hh} heure${
+        return `Pause duration : ${timeFormatted.hh} hours${
           timeFormatted.hh > 1 ? "s" : ""
-        }, ${timeFormatted.mm} minutes et ${timeFormatted.ss} secondes`;
+        }, ${timeFormatted.mm} minutes and ${timeFormatted.ss} seconds`;
       } else {
-        return `Durée de la pause : ${timeFormatted.mm} minutes et ${timeFormatted.ss} secondes`;
+        return `Pause duration : ${timeFormatted.mm} minutes and ${timeFormatted.ss} seconds`;
       }
     },
     getTotalDuration() {
