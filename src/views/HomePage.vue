@@ -1,20 +1,21 @@
 <template>
   <v-row class="ma-0">
     <slot v-if="areActivitiesLoading">
-      <v-col v-for="i in 3" :key="i" xxl="2" lg="3" md="6" cols="12">
+      <v-col v-for="i in 6" :key="i" xxl="2" lg="3" md="6" cols="12">
         <v-skeleton-loader type="card" class="overflow-hidden" />
       </v-col>
     </slot>
     <v-col
       v-else
       v-for="activity in activities"
-      :key="generateKey(activity.userName, activity.tmdbId)"
+      :key="activity.id"
       xxl="2"
       lg="3"
       md="6"
       cols="12"
     >
       <activity-card
+        :activityId="activity.id"
         :user="{
           name: activity.userName,
           ip: activity.ip,
@@ -50,8 +51,29 @@
             pauseDuration: activity.pauseDuration,
           },
         }"
+        @stopAllSessions="stopAllSessions"
       />
     </v-col>
+    <template>
+      <div class="text-center">
+        <v-dialog v-model="showStopAllDialog" width="500">
+          <v-card>
+            <v-card-text>
+              <v-text-field
+                label="Message to display"
+                v-model="stopAllMessage"
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions class="justify-space-between">
+              <v-btn color="primary" @click="cancelStopAll">Back</v-btn>
+              <v-btn color="primary" @click="submitStopAll"
+                >Stop all sessions</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </div>
+    </template>
     <h2 class="ma-2" v-if="activities.length == 0">
       C'est bien calme par ici...
     </h2>
@@ -60,12 +82,15 @@
 
 <script>
 import * as ActivitiesService from "../services/ActivitiesService.js";
+import { sessionStopAll } from "../services/SessionService.js";
 import ActivityCard from "../components/ActivityCard.vue";
 export default {
   data() {
     return {
       areActivitiesLoading: true,
       activities: {},
+      showStopAllDialog: false,
+      stopAllMessage: "",
     };
   },
 
@@ -92,15 +117,24 @@ export default {
       try {
         this.activities = await ActivitiesService.getAll();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     },
-    generateKey(...params) {
-      let key = "";
-      params.forEach((param) => {
-        key += param;
-      });
-      return key;
+    stopAllSessions() {
+      this.showStopAllDialog = true;
+    },
+    cancelStopAll() {
+      this.stopAllMessage = "";
+      this.showStopAllDialog = false;
+    },
+    submitStopAll() {
+      try {
+        sessionStopAll(this.stopAllMessage);
+      } catch (e) {
+        console.error(e);
+      }
+
+      this.showStopAllDialog = false;
     },
   },
 

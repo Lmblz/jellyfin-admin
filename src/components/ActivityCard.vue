@@ -65,10 +65,22 @@
               :icon="media.pause.isPaused ? 'mdi-pause' : 'mdi-play'"
               size="x-small"
               class="mr-1 playing-state"
+              :id="'sessionActivator-' + $props.activityId"
             ></v-icon>
-            <v-tooltip activator="parent" location="end">{{
-              media.pause.isPaused ? getPauseDuration : "En cours de lecture"
-            }}</v-tooltip>
+            <v-menu
+              transition="slide-y-transition"
+              :activator="'#sessionActivator-' + $props.activityId"
+            >
+              <v-list>
+                <v-list-item
+                  v-for="(service, index) in listSessionServices"
+                  :key="index"
+                  @click="service.value"
+                >
+                  <v-list-item-title>{{ service.title }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </div>
           <p class="text-caption mr-2 media-title" ref="mediaTitle">
             <v-tooltip
@@ -123,6 +135,7 @@
 </template>
 
 <script>
+import * as SessionService from "../services/SessionService.js";
 export default {
   data() {
     return {
@@ -162,12 +175,37 @@ export default {
       ],
       isFileNameOverflown: false,
       isMediaTitleOverflown: false,
+      listSessionServices: [
+        {
+          id: "Pause",
+          title: "Pause Session",
+          value: () => SessionService.sessionPause(this.$props.activityId),
+        },
+        {
+          id: "Play",
+          title: "Play Session",
+          value: () => SessionService.sessionStart(this.$props.activityId),
+        },
+        {
+          id: "Stop",
+          title: "Stop Session",
+          value: () => SessionService.sessionStop(this.$props.activityId),
+        },
+        {
+          id: "StopAll",
+          title: "Stop All Sessions",
+          value: () => this.emitStopAllSessions(),
+        },
+      ],
     };
   },
 
   props: {
     isLoading: {
       type: Boolean,
+    },
+    activityId: {
+      type: String,
     },
     user: {
       type: Object,
@@ -293,6 +331,9 @@ export default {
       let timeFormatted = this.getHhMmSs(time);
 
       return `${daysFormatted.dd}/${daysFormatted.mm}/${daysFormatted.aaaa} à ${timeFormatted.hh}h${timeFormatted.mm}`;
+    },
+    emitStopAllSessions() {
+      this.$emit("stopAllSessions");
     },
   },
 };

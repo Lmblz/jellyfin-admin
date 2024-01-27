@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL_NOW = import.meta.env.VITE_API_BASE_URL + '/now';
+const API_URL_NOW = import.meta.env.VITE_API_BASE_URL + '/api/now';
 const API_KEY_NOW = import.meta.env.VITE_API_KEY;
 
 const instance = axios.create({
