@@ -1,39 +1,48 @@
 <template>
-  <v-row class="ma-2 align-center">
+  <v-row class="ma-2 flex-column justify-center">
     <h2 v-if="activities.length == 0">So peaceful...</h2>
     <slot v-else>
-      <h2>Currently playing : {{ activities.length }} sessions</h2>
-      <v-btn
-        class="ml-2"
-        id="allSessionsActivator"
-        density="comfortable"
-        variant="tonal"
-      >
-        <v-icon icon="mdi-pen" size="x-small"></v-icon>
-      </v-btn>
-      <v-menu transition="slide-y-transition" activator="#allSessionsActivator">
-        <v-list>
-          <v-list-item
-            v-for="(service, index) in listAllSessionServices"
-            :key="index"
-            @click="service.value"
-          >
-            <v-list-item-title class="d-flex align-center"
-              ><v-icon
-                :icon="service.icon"
-                size="x-small"
-                class="mr-2"
-                :style="{
-                  fontSize: service.fontSize + 'px',
-                  width: '16px',
-                }"
-                width="16"
-              ></v-icon
-              >{{ service.title }}</v-list-item-title
+      <v-row class="ma-0 align-center">
+        <h2>Currently playing : {{ activities.length }} sessions</h2>
+        <v-btn
+          class="ml-2"
+          id="allSessionsActivator"
+          density="comfortable"
+          variant="tonal"
+        >
+          <v-icon icon="mdi-pen" size="x-small"></v-icon>
+        </v-btn>
+        <v-menu
+          transition="slide-y-transition"
+          activator="#allSessionsActivator"
+        >
+          <v-list>
+            <v-list-item
+              v-for="(service, index) in listAllSessionServices"
+              :key="index"
+              @click="service.value"
             >
-          </v-list-item>
-        </v-list>
-      </v-menu>
+              <v-list-item-title class="d-flex align-center"
+                ><v-icon
+                  :icon="service.icon"
+                  size="x-small"
+                  class="mr-2"
+                  :style="{
+                    fontSize: service.fontSize + 'px',
+                    width: '16px',
+                  }"
+                  width="16"
+                ></v-icon
+                >{{ service.title }}</v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-row>
+      <p>
+        {{ activitiesDetails.nbTranscode }} Transcode -
+        {{ activitiesDetails.nbDirectPlay }} DirectPlay
+      </p>
     </slot>
   </v-row>
   <v-row class="ma-0">
@@ -135,6 +144,10 @@ export default {
           value: () => this.stopAllSessions(),
         },
       ],
+      activitiesDetails: {
+        nbDirectPlay: 0,
+        nbTranscode: 0,
+      },
     };
   },
 
@@ -154,6 +167,24 @@ export default {
   async mounted() {
     await this.getActivities();
     this.areActivitiesLoading = false;
+  },
+
+  watch: {
+    activities(newActivities) {
+      this.activitiesDetails.nbDirectPlay = 0;
+      this.activitiesDetails.nbTranscode = 0;
+      newActivities.forEach((item) => {
+        switch (item.playMethod) {
+          case "DirectPlay":
+            this.activitiesDetails.nbDirectPlay++;
+            break;
+          case "Transcode":
+            this.activitiesDetails.nbTranscode++;
+            break;
+        }
+      });
+      //console.log(newActivities);
+    },
   },
 
   methods: {
