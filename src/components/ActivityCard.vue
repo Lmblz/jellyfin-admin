@@ -210,13 +210,6 @@ export default {
           fontSize: 11,
           value: () => SessionService.sessionStop(this.$props.activityId),
         },
-        {
-          id: "StopAll",
-          title: "Stop All Sessions",
-          icon: "mdi-bell-alert",
-          fontSize: 11,
-          value: () => this.emitStopAllSessions(),
-        },
       ],
     };
   },

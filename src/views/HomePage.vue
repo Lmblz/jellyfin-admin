@@ -1,4 +1,36 @@
 <template>
+  <v-row class="ma-2 align-center">
+    <h2 v-if="activities.length == 0">So peaceful...</h2>
+    <slot v-else>
+      <h2>Currently playing : {{ activities.length }} sessions</h2>
+      <v-btn class="ml-2" id="allSessionsActivator" color="primary">
+        <v-icon icon="mdi-pen" size="x-small"></v-icon>
+      </v-btn>
+      <v-menu transition="slide-y-transition" activator="#allSessionsActivator">
+        <v-list>
+          <v-list-item
+            v-for="(service, index) in listAllSessionServices"
+            :key="index"
+            @click="service.value"
+          >
+            <v-list-item-title class="d-flex align-center"
+              ><v-icon
+                :icon="service.icon"
+                size="x-small"
+                class="mr-2"
+                :style="{
+                  fontSize: service.fontSize + 'px',
+                  width: '16px',
+                }"
+                width="16"
+              ></v-icon
+              >{{ service.title }}</v-list-item-title
+            >
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </slot>
+  </v-row>
   <v-row class="ma-0">
     <slot v-if="areActivitiesLoading">
       <v-col v-for="i in 6" :key="i" xxl="2" lg="3" md="6" cols="12">
@@ -58,6 +90,7 @@
       <div class="text-center">
         <v-dialog v-model="showStopAllDialog" width="500">
           <v-card>
+            <v-card-title>Stop all sessions</v-card-title>
             <v-card-text>
               <v-text-field
                 label="Message to display"
@@ -74,9 +107,6 @@
         </v-dialog>
       </div>
     </template>
-    <h2 class="ma-2" v-if="activities.length == 0">
-      C'est bien calme par ici...
-    </h2>
   </v-row>
 </template>
 
@@ -91,6 +121,15 @@ export default {
       activities: {},
       showStopAllDialog: false,
       stopAllMessage: "",
+      listAllSessionServices: [
+        {
+          id: "StopAll",
+          title: "Stop All Sessions",
+          icon: "mdi-bell-alert",
+          fontSize: 11,
+          value: () => this.stopAllSessions(),
+        },
+      ],
     };
   },
 
