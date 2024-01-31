@@ -3,7 +3,12 @@
     <h2 v-if="activities.length == 0">So peaceful...</h2>
     <slot v-else>
       <h2>Currently playing : {{ activities.length }} sessions</h2>
-      <v-btn class="ml-2" id="allSessionsActivator" color="primary">
+      <v-btn
+        class="ml-2"
+        id="allSessionsActivator"
+        density="comfortable"
+        variant="tonal"
+      >
         <v-icon icon="mdi-pen" size="x-small"></v-icon>
       </v-btn>
       <v-menu transition="slide-y-transition" activator="#allSessionsActivator">
