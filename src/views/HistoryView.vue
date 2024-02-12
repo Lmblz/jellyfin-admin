@@ -3,7 +3,17 @@
     <v-card-title class="d-flex align-center">
       <p>History</p>
       <v-spacer></v-spacer>
+      <v-text-field
+        clearable
+        label="Search by User Id"
+        variant="outlined"
+        density="compact"
+        v-model="userToFilter"
+        @update:modelValue="filterWithUserId($event)"
+        @click:clear="getHistory()"
+      ></v-text-field>
       <v-select
+        class="mx-2"
         density="compact"
         :items="quickFilters"
         label="Quick filters"
@@ -40,13 +50,14 @@
         </template>
       </v-dialog>
       <v-btn
-        v-if="isFilteredByDate"
+        v-if="showDeleteFiltersButton"
         @click="
           (dateToFilter = null),
-            (isFilteredByDate = false),
+            (showDeleteFiltersButton = false),
             (isAscending = false),
             (dateStartFilter = null),
             (dateEndFilter = null),
+            (userToFilter = null),
             getHistory(`?start=0&nb=${itemsPerPage}&isASc=${isAscending}`)
         "
         >Delete filter</v-btn
@@ -116,10 +127,11 @@ export default {
       totalItems: 0,
       isHistoryLoading: true,
       dateToFilter: null,
-      isFilteredByDate: false,
+      showDeleteFiltersButton: false,
       dateStartFilter: null,
       dateEndFilter: null,
       isAscending: false,
+      userToFilter: null,
       quickFilters: ["Today", "Yesterday", "Last week"],
       headers: [
         {
@@ -268,22 +280,33 @@ export default {
     sortPagination(event) {
       let page = event.page;
       let itemsPerPage = event.itemsPerPage;
-
       if (this.dateToFilter !== null) {
         this.getHistory(
           `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
             this.dateToFilter
-          }&isASc=${this.isAscending}`
+          }&isASc=${this.isAscending}${
+            this.userToFilter !== null && this.userToFilter !== ""
+              ? "&userId=" + this.userToFilter
+              : ""
+          }`
         );
       } else if (this.dateEndFilter !== null && this.dateStartFilter !== null) {
         this.getHistory(
           `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
             this.dateStartFilter
-          }&dateEnd=${this.dateEndFilter}`
+          }&dateEnd=${this.dateEndFilter}${
+            this.userToFilter !== null && this.userToFilter !== ""
+              ? "&userId=" + this.userToFilter
+              : ""
+          }`
         );
       } else {
         this.getHistory(
-          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}`
+          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}${
+            this.userToFilter !== null && this.userToFilter !== ""
+              ? "&userId=" + this.userToFilter
+              : ""
+          }`
         );
       }
     },
@@ -296,10 +319,15 @@ export default {
       let itemsPerPage = this.itemsPerPage;
       this.isAscending = true;
       let isAscending = this.isAscending;
+
       this.getHistory(
-        `?start=0&nb=${itemsPerPage}&dateStart=${dateToFilter}&isASc=${isAscending}`
+        `?start=0&nb=${itemsPerPage}&dateStart=${dateToFilter}&isASc=${isAscending}${
+          this.userToFilter !== null && this.userToFilter !== ""
+            ? "&userId=" + this.userToFilter
+            : ""
+        }`
       );
-      this.isFilteredByDate = true;
+      this.showDeleteFiltersButton = true;
     },
 
     fiterWithQuickFilters(event) {
@@ -331,14 +359,35 @@ export default {
           }
 
           if (dateStart !== null && dateEnd !== null) {
-            this.isFilteredByDate = true;
+            this.showDeleteFiltersButton = true;
             this.dateStartFilter = dateStart;
             this.dateEndFilter = dateEnd;
+
             this.getHistory(
-              `?start=0&nb=${this.itemsPerPage}&dateStart=${dateStart}&dateEnd=${dateEnd}`
+              `?start=0&nb=${
+                this.itemsPerPage
+              }&dateStart=${dateStart}&dateEnd=${dateEnd}${
+                this.userToFilter !== null && this.userToFilter !== ""
+                  ? "&userId=" + this.userToFilter
+                  : ""
+              }`
             );
           }
         }
+      }
+    },
+
+    filterWithUserId(event) {
+      if (event !== null) {
+        this.getHistory(
+          `?start=0&nb=${this.itemsPerPage}${
+            this.userToFilter !== null && this.userToFilter !== ""
+              ? "&userId=" + this.userToFilter
+              : ""
+          }`
+        );
+
+        this.showDeleteFiltersButton = true;
       }
     },
 
@@ -363,7 +412,7 @@ export default {
     }
   }
   .v-table {
-    height: calc(100vh - 128px);
+    height: calc(100vh - 140px);
     &__wrapper {
       .v-data-table__thead {
         box-shadow: #0000004f 0px 3px 3px 1px;
