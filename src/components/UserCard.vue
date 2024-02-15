@@ -1,28 +1,39 @@
 <template>
-  <v-card
-    elevation="12"
-    rounded="lg"
-    class="mx-auto"
-    variant="tonal"
-    :subtitle="userName + (isAdmin ? ' - Admin' : '')"
+  <router-link
+    :to="`/users/${userId}`"
+    style="text-decoration: none; color: inherit"
   >
-    <template v-slot:prepend>
-      <v-avatar color="primary" size="small">
-        <slot v-if="hasPicture">
-          <v-img cover :src="getUserPicture(userId)" />
-        </slot>
-        <b v-else>
-          {{ userName.split("")[0].toUpperCase() }}
-        </b>
-      </v-avatar>
-    </template>
-    <v-card-text>
-      <p class="text-caption">Last seen : {{ formatDate(lastSeen) }}</p>
-      <p class="text-caption">
-        Last activity : {{ formatDate(lastSeen) }}
-      </p></v-card-text
-    >
-  </v-card>
+    <v-hover>
+      <template v-slot:default="{ isHovering, props }">
+        <v-card
+          v-bind="props"
+          :class="{ '-hover': isHovering }"
+          elevation="12"
+          rounded="lg"
+          class="mx-auto"
+          variant="tonal"
+          :subtitle="userName + (isAdmin ? ' - Admin' : '')"
+        >
+          <template v-slot:prepend>
+            <v-avatar color="primary" size="small">
+              <slot v-if="hasPicture">
+                <v-img cover :src="getUserPicture(userId)" />
+              </slot>
+              <b v-else>
+                {{ userName.split("")[0].toUpperCase() }}
+              </b>
+            </v-avatar>
+          </template>
+          <v-card-text>
+            <p class="text-caption">Last seen : {{ formatDate(lastSeen) }}</p>
+            <p class="text-caption">
+              Last activity : {{ formatDate(lastSeen) }}
+            </p></v-card-text
+          >
+        </v-card></template
+      >
+    </v-hover>
+  </router-link>
 </template>
 
 <script>
@@ -69,3 +80,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.-hover {
+  opacity: 0.8;
+}
+</style>

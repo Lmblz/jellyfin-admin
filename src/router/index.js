@@ -5,6 +5,8 @@ import HomePage from "../views/HomePage.vue";
 const Library = () => import("../views/LibraryView.vue");
 const Users = () => import("../views/UsersView.vue");
 const History = () => import("../views/HistoryView.vue");
+const UsersSearch = () => import('../views/UsersSearch.vue');
+const User = () => import("../views/UserView.vue");
 
 const routes = [
   {
@@ -31,6 +33,18 @@ const routes = [
     name: 'Users',
     alias: '/users',
     component: Users,
+    children: [
+      {
+        name: 'Search',
+        path: '',
+        component: UsersSearch
+      },
+      {
+        name: 'User',
+        path: ':id',
+        component: User,
+      }
+    ]
   },
   {
     path: '/history',
