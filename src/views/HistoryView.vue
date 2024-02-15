@@ -380,7 +380,7 @@ export default {
     filterWithUserId(event) {
       if (event !== null) {
         this.getHistory(
-          `?start=0&nb=${this.itemsPerPage}${
+          `?start=0&nb=${this.itemsPerPage}&isASc=${isAscending}${
             this.userToFilter !== null && this.userToFilter !== ""
               ? "&userId=" + this.userToFilter
               : ""

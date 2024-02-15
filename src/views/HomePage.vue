@@ -183,7 +183,6 @@ export default {
             break;
         }
       });
-      //console.log(newActivities);
     },
   },
 
