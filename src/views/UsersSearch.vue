@@ -35,14 +35,8 @@
       md="3"
       cols="4"
     >
-      <user-card
-        :userId="user.id"
-        :userName="user.name"
-        :hasPicture="user.hasPicture"
-        :lastSeen="user.lastLoginDate"
-        :lastActivity="user.lastActivityDate"
-        :isAdmin="user.isAdministrator"
-      ></user-card>
+      <!-- <p>{{ user }}</p> -->
+      <user-card :userData="user" context="usersSearch"></user-card>
     </v-col>
   </v-row>
 </template>

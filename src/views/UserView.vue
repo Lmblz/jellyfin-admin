@@ -1,9 +1,17 @@
 <template>
-  <p>User : {{ userId }}</p>
+  <div>
+    <user-card
+      :userData="userData"
+      context="userView"
+      class="mt-2"
+      v-if="userData"
+    ></user-card>
+  </div>
 </template>
 
 <script>
 import * as UsersService from "../services/UsersService";
+import UserCard from "../components/UserCard.vue";
 
 export default {
   data() {
@@ -13,7 +21,11 @@ export default {
     };
   },
 
-  mounted() {
+  components: {
+    UserCard,
+  },
+
+  created() {
     this.userId = this.$route.params.id;
     this.getUser();
   },

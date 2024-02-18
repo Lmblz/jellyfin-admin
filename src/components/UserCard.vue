@@ -1,6 +1,7 @@
 <template>
-  <router-link
-    :to="`/users/${userId}`"
+  <component
+    :is="cardRootNode"
+    v-bind="linkProps"
     style="text-decoration: none; color: inherit"
   >
     <v-hover>
@@ -12,55 +13,50 @@
           rounded="lg"
           class="mx-auto"
           variant="tonal"
-          :subtitle="userName + (isAdmin ? ' - Admin' : '')"
+          :subtitle="
+            userData.name + (userData.isAdministrator ? ' - Admin' : '')
+          "
         >
           <template v-slot:prepend>
-            <v-avatar color="primary" size="small">
-              <slot v-if="hasPicture">
-                <v-img cover :src="getUserPicture(userId)" />
+            <v-avatar
+              :color="!userData.hasPicture ? 'primary' : ''"
+              size="small"
+            >
+              <slot v-if="userData.hasPicture">
+                <v-img cover :src="getUserPicture(userData.id)" />
               </slot>
               <b v-else>
-                {{ userName.split("")[0].toUpperCase() }}
+                {{ userData.name.split("")[0].toUpperCase() }}
               </b>
             </v-avatar>
           </template>
           <v-card-text>
-            <p class="text-caption">Last seen : {{ formatDate(lastSeen) }}</p>
             <p class="text-caption">
-              Last activity : {{ formatDate(lastSeen) }}
-            </p></v-card-text
-          >
+              Last seen : {{ formatDate(userData.lastLoginDate) }}
+            </p>
+            <p class="text-caption">
+              Last activity : {{ formatDate(userData.lastActivityDate) }}
+            </p>
+          </v-card-text>
         </v-card></template
       >
     </v-hover>
-  </router-link>
+  </component>
 </template>
 
 <script>
 export default {
   props: {
-    userId: {
-      type: String,
+    userData: {
       required: true,
     },
-    userName: {
+    context: {
       type: String,
-      required: true,
     },
-    hasPicture: {
-      type: Boolean,
-    },
-    lastSeen: {
-      type: String,
-      required: true,
-    },
-    lastActivity: {
-      type: String,
-      required: true,
-    },
-    isAdmin: {
-      type: Boolean,
-    },
+  },
+
+  mounted() {
+    console.log(this.$props.userData);
   },
 
   methods: {
@@ -68,7 +64,7 @@ export default {
       return `https://j.nimi.ovh/users/${id}/Images/Primary`;
     },
     formatDate(date) {
-      if (date !== "0001-01-01T00:00:00") {
+      if (date !== "0001-01-01T00:00:00" && date != undefined && date != "") {
         let dateWithoutSec = date.substring(0, date.length - 11);
         let splittedDate = dateWithoutSec.split("T");
         let dateArr = splittedDate[0].split("-");
@@ -76,6 +72,22 @@ export default {
       }
 
       return "Never";
+    },
+  },
+
+  computed: {
+    cardRootNode() {
+      return this.context === "usersSearch" ? "router-link" : "div";
+    },
+    linkProps() {
+      if (this.context === "usersSearch") {
+        return {
+          to: `/users/${this.userData.id}`,
+          // Autres attributs de <router-link> peuvent être ajoutés ici
+        };
+      } else {
+        return {}; // Aucun attribut à passer
+      }
     },
   },
 };
