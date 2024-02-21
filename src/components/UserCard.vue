@@ -14,8 +14,13 @@
           class="mx-auto"
           variant="tonal"
           :subtitle="
-            userData.name + (userData.isAdministrator ? ' - Admin' : '')
+            context !== 'usersSearch'
+              ? userData.id
+              : userData.name +
+                (userData.isAdministrator ? ' - Admin' : '') +
+                (context !== 'usersSearch' ? ' - ' + userData.id : '')
           "
+          :title="context !== 'usersSearch' ? userData.name : ''"
         >
           <template v-slot:prepend>
             <v-avatar
@@ -31,11 +36,22 @@
             </v-avatar>
           </template>
           <v-card-text>
-            <p class="text-caption">
-              Last seen : {{ formatDate(userData.lastLoginDate) }}
+            <p :class="context !== 'usersSearch' ? '' : 'text-caption'">
+              Total watch : {{ userData.totalWatch }}
             </p>
-            <p class="text-caption">
+            <p :class="context !== 'usersSearch' ? '' : 'text-caption'">
               Last activity : {{ formatDate(userData.lastActivityDate) }}
+              {{
+                userData.lastWatch && context !== "usersSearch"
+                  ? ": " + userData.lastWatch.title
+                  : ""
+              }}
+            </p>
+            <p :class="context !== 'usersSearch' ? '' : 'text-caption'">
+              Id : {{ userData.id }}
+            </p>
+            <p :class="context !== 'usersSearch' ? '' : 'text-caption'">
+              Last seen : {{ formatDate(userData.lastLoginDate) }}
             </p>
           </v-card-text>
         </v-card></template
