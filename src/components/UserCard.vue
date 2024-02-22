@@ -99,10 +99,9 @@ export default {
       if (this.context === "usersSearch") {
         return {
           to: `/users/${this.userData.id}`,
-          // Autres attributs de <router-link> peuvent être ajoutés ici
         };
       } else {
-        return {}; // Aucun attribut à passer
+        return {};
       }
     },
   },

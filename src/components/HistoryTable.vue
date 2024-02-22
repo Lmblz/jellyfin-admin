@@ -4,6 +4,7 @@
       <p>History</p>
       <v-spacer></v-spacer>
       <v-text-field
+        v-if="context !== 'userView'"
         clearable
         label="Search by User Id"
         variant="outlined"
@@ -95,7 +96,11 @@
 
       <!-- eslint-disable-next-line -->
       <template v-slot:item.userName="{ item }">
-        <div class="d-flex align-center">
+        <component
+          :is="userNameNode"
+          v-bind="linkProps(item)"
+          class="d-flex align-center history-user"
+        >
           <v-avatar
             :color="item.userHasPicture ? '' : 'primary'"
             size="small"
@@ -114,7 +119,7 @@
             </b>
           </v-avatar>
           <p class="ml-2">{{ item.userName }}</p>
-        </div>
+        </component>
       </template>
     </v-data-table-server>
   </v-card>
@@ -206,7 +211,23 @@ export default {
     this.userId ? (this.userToFilter = this.userId) : "";
   },
 
+  computed: {
+    userNameNode() {
+      return this.context !== "userView" ? "router-link" : "div";
+    },
+  },
+
   methods: {
+    linkProps(item) {
+      if (this.context !== "userView") {
+        return {
+          to: `/users/${item.userId}`,
+        };
+      } else {
+        return {};
+      }
+    },
+
     async getHistory(params) {
       this.isHistoryLoading = true;
       this.historyResults = [];
@@ -441,6 +462,11 @@ export default {
     }
     .v-data-table-footer {
       justify-content: space-between;
+    }
+
+    .history-user {
+      text-decoration: none;
+      color: inherit;
     }
   }
 }
