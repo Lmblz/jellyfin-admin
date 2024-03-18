@@ -76,7 +76,7 @@
             >
               <v-list>
                 <v-list-item
-                  v-for="(service, index) in listSessionServices"
+                  v-for="(service, index) in getListSessionServices"
                   :key="index"
                   @click="service.value"
                 >
@@ -194,13 +194,13 @@ export default {
         {
           id: "Pause",
           title: "Pause Session",
-          icon: "mdi-play",
+          icon: "mdi-pause",
           value: () => SessionService.sessionPause(this.$props.activityId),
         },
         {
           id: "Play",
           title: "Play Session",
-          icon: "mdi-pause",
+          icon: "mdi-play",
           value: () => SessionService.sessionStart(this.$props.activityId),
         },
         {
@@ -266,6 +266,8 @@ export default {
       mediaTitleElement.classList.add("-overflown");
       this.isMediaTitleOverflown = true;
     }
+
+    console.log(this.getListSessionServices);
   },
 
   computed: {
@@ -315,6 +317,14 @@ export default {
     getPlayerImage() {
       let logo = this.$props.device.logo;
       return "/Player-logos/" + logo + ".png";
+    },
+    getListSessionServices() {
+      let arr = [];
+      this.$props.media.pause.isPaused
+        ? arr.push(this.listSessionServices[1])
+        : arr.push(this.listSessionServices[0]);
+      arr.push(this.listSessionServices[2]);
+      return arr;
     },
   },
 
