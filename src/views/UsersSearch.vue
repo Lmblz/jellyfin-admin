@@ -85,21 +85,18 @@ export default {
 
   methods: {
     async getUsers(param) {
+      this.isLoading = true;
       try {
         this.result = await UsersService.get(param);
         this.users = this.result.results;
-        console.log(this.users);
       } catch (e) {
         console.error(e);
       }
+      this.isLoading = false;
     },
 
     async searchUser(event) {
-      this.isLoading = true;
       await this.getUsers("?userName=" + this.search + "&nb=" + this.nbResults);
-      // Uncomment if want to sort users by alphabetical order
-      //this.sortUsersByName();
-      this.isLoading = false;
     },
 
     sortUsersByName() {
