@@ -121,9 +121,20 @@
           <p class="ml-2">{{ item.userName }}</p>
         </component>
       </template>
+
+      <template v-slot:item.percentageWatched="{ item }">
+        <v-row>
+          <p
+            class="percentage-watched mr-2"
+            :style="{ '--progression': item.percentageWatched }"
+          ></p>
+          <p>{{ item.percentageWatched }}%</p>
+        </v-row>
+      </template>
     </v-data-table-server>
   </v-card>
 </template>
+
 <script>
 import * as HistoryService from "../services/HistoryService.js";
 export default {
@@ -192,6 +203,11 @@ export default {
         {
           title: "Stopped time",
           key: "stoppedTimeFormatted",
+          sortable: false,
+        },
+        {
+          title: "Percentage watched",
+          key: "percentageWatched",
           sortable: false,
         },
       ],
@@ -295,6 +311,15 @@ export default {
         watchDurationFormatted = watchDurationInMin + "m";
       }
       item.watchedDurationFormatted = watchDurationFormatted;
+
+      // Percentage watched
+      console.log((watchTimeInSecond / totalDurationInSecond) * 100);
+      console.log("------");
+      let percentageWatched = Math.round(
+        (watchTimeInSecond / totalDurationInSecond) * 100
+      );
+      if (percentageWatched >= 95) percentageWatched = 100;
+      item.percentageWatched = percentageWatched;
 
       // Stopped time format
       const endTimeDate = new Date(item.endWatch);
@@ -459,22 +484,43 @@ export default {
       .v-data-table__thead {
         box-shadow: #0000004f 0px 3px 3px 1px;
       }
-    }
 
-    .v-data-table__tr {
-      &:nth-child(odd) {
-        .v-data-table__td {
-          border-bottom: thin solid #ffffff66 !important;
+      .v-data-table__tr {
+        &:nth-child(odd) {
+          .v-data-table__td {
+            border-bottom: thin solid #ffffff66 !important;
+          }
+        }
+
+        &:nth-child(even) {
+          .v-data-table__td {
+            border-bottom: thin solid #ffffffaa !important;
+          }
+        }
+
+        .percentage-watched {
+          border: thin solid white;
+          border-radius: 9999px;
+          height: 20px;
+          width: 20px;
+          position: relative;
+
+          &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: conic-gradient(
+              white calc(var(--progression) * 1%),
+              #333 0
+            );
+            border-radius: inherit;
+          }
         }
       }
-
-      &:nth-child(even) {
-        .v-data-table__td {
-          border-bottom: thin solid #ffffffaa !important;
-        }
-      }
     }
-
     .v-data-table-footer {
       justify-content: space-between;
     }
