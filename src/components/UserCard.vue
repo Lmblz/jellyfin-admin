@@ -48,9 +48,6 @@
               }}
             </p>
             <p :class="context !== 'usersSearch' ? '' : 'text-caption'">
-              Id : {{ userData.id }}
-            </p>
-            <p :class="context !== 'usersSearch' ? '' : 'text-caption'">
               Last seen : {{ formatDate(userData.lastLoginDate) }}
             </p>
           </v-card-text>
