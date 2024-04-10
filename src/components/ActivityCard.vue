@@ -367,6 +367,7 @@ export default {
 .v-list-item--density-default {
   min-height: inherit;
 }
+
 .v-card {
   & > .v-row {
     background: linear-gradient(270deg, #121212ff, #12121200 90%) !important;
