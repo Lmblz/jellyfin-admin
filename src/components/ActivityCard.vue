@@ -32,7 +32,7 @@
         <div class="player-image rounded">
           <v-img :src="getPlayerImage" width="50">
             <v-tooltip activator="parent" location="end">{{
-              device.name
+              device.appName
             }}</v-tooltip></v-img
           >
         </div>
@@ -123,26 +123,28 @@
               getTotalDuration.ss
             }}
           </p>
-          <router-link :to="`/users/${user.id}`" class="user-avatar__link">
-            <v-avatar
-              color="primary"
-              size="small"
-              class="user-avatar__image"
-              :class="user.hasPicture ? '-has-picture' : ''"
-            >
-              <slot v-if="user.hasPicture">
-                <img
-                  :src="
-                    'https://j.nimi.ovh/users/' + user.id + '/Images/Primary'
-                  "
-                />
-              </slot>
-              <b v-else>
-                {{ user.name.split("")[0].toUpperCase() }}
-              </b>
-            </v-avatar>
-            <p class="text-caption user-name">{{ user.name }}</p>
-          </router-link>
+          <div class="user-avatar__wrapper d-flex flex-column align-center">
+            <router-link :to="`/users/${user.id}`" class="user-avatar__link">
+              <v-avatar
+                color="primary"
+                size="small"
+                class="user-avatar__image"
+                :class="user.hasPicture ? '-has-picture' : ''"
+              >
+                <slot v-if="user.hasPicture">
+                  <img
+                    :src="
+                      'https://j.nimi.ovh/users/' + user.id + '/Images/Primary'
+                    "
+                  />
+                </slot>
+                <b v-else>
+                  {{ user.name.split("")[0].toUpperCase() }}
+                </b>
+              </v-avatar>
+              <p class="text-caption user-name">{{ user.name }}</p>
+            </router-link>
+          </div>
         </v-row>
       </v-row>
     </v-card-actions>
@@ -173,7 +175,7 @@ export default {
         },
         {
           title: "App",
-          content: this.$props.device.appName,
+          content: this.$props.device.name,
         },
         {
           title: "App version",
