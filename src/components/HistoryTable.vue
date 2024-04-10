@@ -460,6 +460,21 @@ export default {
         box-shadow: #0000004f 0px 3px 3px 1px;
       }
     }
+
+    .v-data-table__tr {
+      &:nth-child(odd) {
+        .v-data-table__td {
+          border-bottom: thin solid #ffffff66 !important;
+        }
+      }
+
+      &:nth-child(even) {
+        .v-data-table__td {
+          border-bottom: thin solid #ffffffaa !important;
+        }
+      }
+    }
+
     .v-data-table-footer {
       justify-content: space-between;
     }
