@@ -123,7 +123,7 @@
               getTotalDuration.ss
             }}
           </p>
-          <div class="user-avatar__wrapper d-flex flex-column align-center">
+          <router-link :to="`/users/${user.id}`" class="user-avatar__link">
             <v-avatar
               color="primary"
               size="small"
@@ -142,7 +142,7 @@
               </b>
             </v-avatar>
             <p class="text-caption user-name">{{ user.name }}</p>
-          </div>
+          </router-link>
         </v-row>
       </v-row>
     </v-card-actions>
@@ -266,8 +266,6 @@ export default {
       mediaTitleElement.classList.add("-overflown");
       this.isMediaTitleOverflown = true;
     }
-
-    console.log(this.getListSessionServices);
   },
 
   computed: {
@@ -444,6 +442,16 @@ export default {
           position: absolute;
           right: 0;
           top: -2px;
+
+          .user-avatar__link {
+            cursor: pointer;
+            color: inherit;
+
+            * {
+              cursor: pointer;
+              text-decoration: none;
+            }
+          }
 
           .user-avatar__image {
             &.-has-picture {
