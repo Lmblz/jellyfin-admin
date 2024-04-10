@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="mx-auto my-2 w-100">
+  <v-card class="mx-auto my-2 w-100 pa-2">
     <v-form
       validate-on="submit lazy"
       @submit.prevent="
@@ -9,20 +9,18 @@
       "
     >
       <v-text-field
+        :loading="isLoading"
         v-model="search"
+        prepend-inner-icon="mdi-account"
+        append-inner-icon="mdi-magnify"
         :rules="rules"
         label="Search for a user"
+        variant="outlined"
+        clearable
+        @click:append-inner="search.length > 0 ? searchUser() : ''"
       ></v-text-field>
-
-      <v-btn
-        :loading="isLoading"
-        type="submit"
-        block
-        class="mt-2"
-        text="Search"
-      ></v-btn>
     </v-form>
-  </v-sheet>
+  </v-card>
   <v-row v-if="result && users.length > 0">
     <v-col cols="12">
       <h2>{{ users.length }} result<slot v-if="users.length > 1">s</slot></h2>
