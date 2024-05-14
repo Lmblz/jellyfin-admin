@@ -1,11 +1,23 @@
 <template>
-  <users-table></users-table>
+  <users-table @errorEvent="showError"></users-table>
+  <v-snackbar
+    v-model="hasError"
+    title="Error"
+    location="top right"
+    variant="flat"
+    color="error"
+  >
+    <h3>Error - {{ errorContext }}</h3>
+    <p>{{ errorMessage }}</p>
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" @click="hasError = false"> </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
 import * as UsersService from "../services/UsersService";
 import UserCard from "@/components/UserCard.vue";
-import UsersTable from "@/components/UsersTable.vue";
 import UsersTable from "@/components/UsersTable.vue";
 
 export default {
@@ -24,6 +36,9 @@ export default {
           return "This field can not be empty";
         },
       ],
+      hasError: false,
+      errorMessage: null,
+      errorContext: null,
     };
   },
 
@@ -38,6 +53,7 @@ export default {
       this.totalUsers = response.count;
     } catch (e) {
       console.error(e);
+      this.showError("errorEvent", { context: "Users", message: e.message });
     }
   },
 
@@ -49,6 +65,7 @@ export default {
         this.users = this.result.results;
       } catch (e) {
         console.error(e);
+        this.showError("errorEvent", { context: "Users", message: e.message });
       }
       this.isLoading = false;
     },
@@ -64,6 +81,12 @@ export default {
         }
         return 1;
       });
+    },
+
+    showError({ context, message }) {
+      this.errorMessage = message;
+      this.errorContext = context;
+      this.hasError = true;
     },
   },
 };
