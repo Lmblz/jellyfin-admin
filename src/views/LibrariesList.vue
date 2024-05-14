@@ -3,7 +3,11 @@
     <slot v-if="!isLoading">
       <v-col
         v-if="libraries && libraries.length > 0"
-        cols="3"
+        xxl="2"
+        lg="3"
+        md="4"
+        sm="6"
+        cols="12"
         v-for="(library, index) in libraries"
         :key="index"
       >
