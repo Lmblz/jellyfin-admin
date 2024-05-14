@@ -29,7 +29,7 @@ export default {
         },
         {
           title: "Library",
-          url: "/library",
+          url: "/libraries",
         },
         {
           title: "Users",
