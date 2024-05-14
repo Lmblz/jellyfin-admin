@@ -123,6 +123,7 @@ export default {
       this.totalUsers = response.count;
     } catch (e) {
       console.error(e);
+      this.$emit("errorEvent", { context: "Users", message: e.message });
     }
 
     this.getUsers(`?start=0&nb=${this.itemsPerPage}`);
@@ -139,6 +140,7 @@ export default {
         this.usersSearched = this.users;
       } catch (e) {
         console.error(e);
+        this.$emit("errorEvent", { context: "Users", message: e.message });
       }
       this.isLoading = false;
     },

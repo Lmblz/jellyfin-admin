@@ -150,6 +150,7 @@ export default {
         this.totalItems = this.result.count;
       } catch (e) {
         console.error(e);
+        this.$emit("errorEvent", { context: "Media", message: e.message });
       }
 
       this.isLoading = false;

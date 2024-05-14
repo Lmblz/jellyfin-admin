@@ -2,8 +2,22 @@
   <MediaTable
     v-if="libraryId"
     :defaultFilter="[{ param: 'libraryId', value: libraryId }]"
+    @errorEvent="showError"
   >
   </MediaTable>
+  <v-snackbar
+    v-model="hasError"
+    title="Error"
+    location="top right"
+    variant="flat"
+    color="error"
+  >
+    <h3>Error - {{ errorContext }}</h3>
+    <p>{{ errorMessage }}</p>
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" @click="hasError = false"> </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -13,6 +27,9 @@ export default {
   data() {
     return {
       libraryId: null,
+      hasError: false,
+      errorMessage: null,
+      errorContext: null,
     };
   },
 
@@ -23,6 +40,12 @@ export default {
     console.log(this.libraryId);
   },
 
-  methods: {},
+  methods: {
+    showError({ context, message }) {
+      this.errorMessage = message;
+      this.errorContext = context;
+      this.hasError = true;
+    },
+  },
 };
 </script>

@@ -57,6 +57,19 @@
         <MediaCard :name="media.title" :mediaId="media.id" :mediaImage="media.mediaPictureId" />
       </v-col>
     </v-row> -->
+  <v-snackbar
+    v-model="hasError"
+    title="Error"
+    location="top right"
+    variant="flat"
+    color="error"
+  >
+    <h3>Error - {{ errorContext }}</h3>
+    <p>{{ errorMessage }}</p>
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" @click="hasError = false"> </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -73,6 +86,9 @@ export default {
       hoverOpacity: 0.8,
       defaultOpacity: 1,
       search: "",
+      hasError: false,
+      errorMessage: null,
+      errorContext: null,
     };
   },
 
@@ -96,6 +112,7 @@ export default {
         //console.log(this.libraries);
       } catch (e) {
         console.error(e);
+        this.showError({ context: "Libraries", message: e.message });
       }
       this.isLoading = false;
     },
@@ -106,6 +123,12 @@ export default {
 
     searchMedia(event) {
       console.log(this.search);
+    },
+
+    showError({ context, message }) {
+      this.errorMessage = message;
+      this.errorContext = context;
+      this.hasError = true;
     },
   },
 };

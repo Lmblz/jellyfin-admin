@@ -14,7 +14,21 @@
     context="userView"
     :default-filter="[{ param: 'userId', value: userId }]"
     no-data="It seems empty here :/"
+    @errorEvent="showError"
   ></history-table>
+  <v-snackbar
+    v-model="hasError"
+    title="Error"
+    location="top right"
+    variant="flat"
+    color="error"
+  >
+    <h3>Error - {{ errorContext }}</h3>
+    <p>{{ errorMessage }}</p>
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" @click="hasError = false"> </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -82,6 +96,9 @@ export default {
           sortable: false,
         },
       ],
+      hasError: false,
+      errorMessage: null,
+      errorContext: null,
     };
   },
 
@@ -105,6 +122,7 @@ export default {
         console.log(this.userData);
       } catch (e) {
         console.error(e);
+        this.showError("errorEvent", { context: "User", message: e.message });
       }
     },
 
@@ -122,6 +140,7 @@ export default {
         console.log(this.userHistory);
       } catch (e) {
         console.error(e);
+        this.showError("errorEvent", { context: "User", message: e.message });
       }
       this.isHistoryLoading = false;
     },
@@ -229,6 +248,12 @@ export default {
       //       }`
       //     );
       //   }
+    },
+
+    showError({ context, message }) {
+      this.errorMessage = message;
+      this.errorContext = context;
+      this.hasError = true;
     },
   },
 };

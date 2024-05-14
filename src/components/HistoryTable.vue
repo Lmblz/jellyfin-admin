@@ -345,6 +345,7 @@ export default {
         this.isHistoryLoading = false;
       } catch (e) {
         console.error(e);
+        this.$emit("errorEvent", { context: "History", message: e.message });
         this.isHistoryLoading = false;
       }
     },

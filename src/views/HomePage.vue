@@ -122,6 +122,19 @@
       </div>
     </template>
   </v-row>
+  <v-snackbar
+    v-model="hasError"
+    title="Error"
+    location="top right"
+    variant="flat"
+    color="error"
+  >
+    <h3>Error - {{ errorContext }}</h3>
+    <p>{{ errorMessage }}</p>
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" @click="hasError = false"> </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
@@ -148,6 +161,9 @@ export default {
         nbDirectPlay: 0,
         nbTranscode: 0,
       },
+      hasError: false,
+      errorMessage: null,
+      errorContext: null,
     };
   },
 
@@ -190,25 +206,37 @@ export default {
     async getActivities() {
       try {
         this.activities = await ActivitiesService.getAll();
+        console.log(this.activities);
       } catch (e) {
         console.error(e);
+        this.showError({ context: "Activity", message: e.message });
       }
     },
+
     stopAllSessions() {
       this.showStopAllDialog = true;
     },
+
     cancelStopAll() {
       this.stopAllMessage = "";
       this.showStopAllDialog = false;
     },
+
     submitStopAll() {
       try {
         sessionStopAll(this.stopAllMessage);
       } catch (e) {
         console.error(e);
+        this.$emit("errorEvent", { context: "Activity", message: e.message });
       }
 
       this.showStopAllDialog = false;
+    },
+
+    showError({ context, message }) {
+      this.errorMessage = message;
+      this.errorContext = context;
+      this.hasError = true;
     },
   },
 

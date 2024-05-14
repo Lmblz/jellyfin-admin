@@ -192,8 +192,22 @@
     :default-filter="[{ param: 'fileId', value: mediaData.mediaPictureId }]"
     no-data="No one has seen this media :("
     class="mb-4"
+    @errorEvent="showError"
   />
   <v-skeleton-loader v-else type="table" class="mb-4"></v-skeleton-loader>
+  <v-snackbar
+    v-model="hasError"
+    title="Error"
+    location="top right"
+    variant="flat"
+    color="error"
+  >
+    <h3>Error - {{ errorContext }}</h3>
+    <p>{{ errorMessage }}</p>
+    <template v-slot:actions>
+      <v-btn icon="mdi-close" @click="hasError = false"> </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 <script>
 import HistoryTable from "@/components/HistoryTable.vue";
@@ -211,6 +225,9 @@ export default {
       tmdbLoading: true,
       dataLoading: true,
       castingLoading: true,
+      hasError: false,
+      errorMessage: null,
+      errorContext: null,
     };
   },
 
@@ -248,6 +265,7 @@ export default {
         console.log(this.mediaData);
       } catch (e) {
         console.error(e);
+        this.showError({ context: "Media", message: e.message });
       }
       this.dataLoading = false;
     },
@@ -264,6 +282,7 @@ export default {
         //console.log(this.tmdbData);
       } catch (e) {
         console.error(e);
+        this.showError("errorEvent", { context: "Media", message: e.message });
 
         this.tmdbLoading = false;
       }
@@ -279,6 +298,7 @@ export default {
         //console.log(this.casting);
       } catch (e) {
         console.error(e);
+        this.showError("errorEvent", { context: "Media", message: e.message });
       }
       this.castingLoading = false;
     },
@@ -294,6 +314,7 @@ export default {
         this.tmdbLoading = false;
       } catch (e) {
         console.error(e);
+        this.showError("errorEvent", { context: "Media", message: e.message });
         this.tmdbLoading = false;
       }
     },
@@ -308,12 +329,19 @@ export default {
         //console.log(this.casting);
       } catch (e) {
         console.error(e);
+        this.showError("errorEvent", { context: "Media", message: e.message });
       }
       this.castingLoading = false;
     },
 
     getRateValue(value) {
       return Math.round(value * 10) / 10;
+    },
+
+    showError({ context, message }) {
+      this.errorMessage = message;
+      this.errorContext = context;
+      this.hasError = true;
     },
   },
 
