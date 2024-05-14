@@ -2,11 +2,14 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import HomePage from "../views/HomePage.vue";
+const Libraries = () => import("../views/LibrariesView.vue");
+const LibrariesList = () => import("../views/LibrariesList.vue");
 const Library = () => import("../views/LibraryView.vue");
 const Users = () => import("../views/UsersView.vue");
 const History = () => import("../views/HistoryView.vue");
 const UsersSearch = () => import('../views/UsersSearch.vue');
 const User = () => import("../views/UserView.vue");
+const Media = () => import("../views/MediaView.vue");
 
 const routes = [
   {
@@ -23,10 +26,22 @@ const routes = [
     ],
   },
   {
-    path: "/library",
-    name: "Library",
-    alias: '/library',
-    component: Library,
+    path: "/libraries",
+    name: "Libraries",
+    alias: '/libraries',
+    component: Libraries,
+    children: [
+      {
+        name: 'LibrariesList',
+        path: '',
+        component: LibrariesList,
+      },
+      {
+        name: "Library",
+        path: ":id",
+        component: Library
+      }
+    ]
   },
   {
     path: '/users',
@@ -51,6 +66,22 @@ const routes = [
     name: 'History',
     alias: '/history',
     component: History,
+  },
+  {
+    path: "/media",
+    redirect: "/",
+  },
+  {
+    path: "/media/:id",
+    name: "Media",
+    alias: "/media/:id",
+    component: Media,
+    beforeEnter: (to, from, next) => {
+      const id = parseInt(to.params.id);
+      isNaN(id)
+        ? next("/")
+        : next();
+    }
   }
 ]
 

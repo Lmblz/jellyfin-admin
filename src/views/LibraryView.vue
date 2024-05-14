@@ -1,7 +1,25 @@
 <template>
-  <h1>Les films et séries</h1>
+  <media-table :libraryIdProp="libraryId"></media-table>
 </template>
 
 <script>
-export default {};
+import MediaTable from "@/components/MediaTable.vue";
+
+export default {
+  data() {
+    return {
+      libraryId: "",
+      medias: [],
+    };
+  },
+
+  components: { MediaTable },
+
+  created() {
+    this.libraryId = this.$route.params.id;
+    console.log(this.libraryId);
+  },
+
+  methods: {},
+};
 </script>
