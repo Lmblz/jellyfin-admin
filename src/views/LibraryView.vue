@@ -1,5 +1,9 @@
 <template>
-  <media-table :libraryIdProp="libraryId"></media-table>
+  <MediaTable
+    v-if="libraryId"
+    :defaultFilter="[{ param: 'libraryId', value: libraryId }]"
+  >
+  </MediaTable>
 </template>
 
 <script>
@@ -8,8 +12,7 @@ import MediaTable from "@/components/MediaTable.vue";
 export default {
   data() {
     return {
-      libraryId: "",
-      medias: [],
+      libraryId: null,
     };
   },
 

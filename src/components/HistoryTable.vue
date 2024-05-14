@@ -58,13 +58,7 @@
             (isAscending = false),
             (dateStartFilter = null),
             (dateEndFilter = null),
-            (userToFilter = null),
-            this.getHistory()
-          // getHistory(
-          //   `?start=0&nb=${itemsPerPage}&isASc=${isAscending}&userId=${
-          //     userId ? userId : ''
-          //   }`
-          // )
+            (userToFilter = null)
         "
         >Delete filter</v-btn
       >
@@ -84,15 +78,21 @@
       :loading="isHistoryLoading"
       :class="context"
       @update:options="sortPagination($event)"
+      :no-data-text="noDataText"
     >
       <!-- eslint-disable-next-line vue/valid-v-slot -->
       <template v-slot:item.title="{ item }">
-        <p>
-          {{ item.title }}
-          <slot v-if="item.mediaType == 'tv'"
-            >- S{{ item.saison }} - E{{ item.episode }}</slot
-          >
-        </p>
+        <router-link
+          :to="'/Media/' + item.id"
+          style="color: inherit; text-decoration: inherit"
+        >
+          <p>
+            {{ item.title }}
+            <slot v-if="item.mediaType == 'tv'"
+              >- S{{ item.saison }} - E{{ item.episode }}</slot
+            >
+          </p>
+        </router-link>
       </template>
 
       <!-- eslint-disable-next-line -->
@@ -137,6 +137,8 @@
 </template>
 
 <script>
+// TODO : filter user & media
+// Throws well to many results, why ?
 import * as HistoryService from "../services/HistoryService.js";
 export default {
   data() {
@@ -146,7 +148,7 @@ export default {
       historyResultsFormatted: [],
       currentPage: 0,
       itemsPerPage: 25,
-      itemsPerPageOptions: [10, 20, 50, 100],
+      itemsPerPageOptions: [10, 25, 50, 100],
       totalItems: 0,
       isHistoryLoading: true,
       dateToFilter: null,
@@ -155,6 +157,7 @@ export default {
       dateEndFilter: null,
       isAscending: false,
       userToFilter: null,
+      noDataText: "",
       quickFilters: ["Today", "Yesterday", "Last week"],
       headers: [
         {
@@ -229,15 +232,21 @@ export default {
     nbResults: {
       type: Number,
     },
+    noData: {
+      type: String,
+      required: true,
+    },
   },
 
-  created() {
-    this.userId ? (this.userToFilter = this.userId) : "";
-  },
+  created() {},
 
   mounted() {
     if (this.$props.nbResults !== undefined) {
       this.itemsPerPage = this.$props.nbResults;
+    }
+
+    if (this.$props.noData) {
+      this.noDataText = this.$props.noData;
     }
   },
 
@@ -260,8 +269,6 @@ export default {
 
     async getHistory() {
       this.isHistoryLoading = true;
-      this.historyResults = [];
-      this.historyResultsFormatted = [];
       let params = [];
       const defaultFilter = this.$props.defaultFilter;
 
@@ -287,7 +294,7 @@ export default {
 
       // Date start
       if (this.dateStartFilter !== null) {
-        console.log(this.dateStartFilter);
+        //console.log(this.dateStartFilter);
         params.push({
           param: "dateStart",
           value: this.dateStartFilter,
@@ -296,10 +303,18 @@ export default {
 
       // Date end
       if (this.dateEndFilter !== null) {
-        console.log(this.dateEndFilter);
+        //console.log(this.dateEndFilter);
         params.push({
           param: "dateEnd",
           value: this.dateEndFilter,
+        });
+      }
+
+      // User
+      if (this.userToFilter !== null) {
+        params.push({
+          param: "userId",
+          value: this.userToFilter,
         });
       }
 
@@ -313,15 +328,20 @@ export default {
           paramsString += newParam;
         });
       }
-      console.log(params);
-      console.log(paramsString);
+
       try {
         this.history = await HistoryService.get(paramsString);
         this.totalItems = this.history.count;
-        this.history.results.forEach((item) => {
+        for (let i = 0; i < this.history.results.length; i++) {
+          if (i == 0) {
+            this.historyResults = [];
+            this.historyResultsFormatted = [];
+          }
+
+          const item = this.history.results[i];
           this.historyResults.push(item);
           this.historyResultsFormatted.push(this.formatHistoryResult(item));
-        });
+        }
         this.isHistoryLoading = false;
       } catch (e) {
         console.error(e);
@@ -406,39 +426,7 @@ export default {
     },
 
     sortPagination(event) {
-      console.log(event);
       this.currentPage = event.page;
-      let page = event.page;
-      let itemsPerPage = event.itemsPerPage;
-      // if (this.dateToFilter !== null) {
-      //   this.getHistory(
-      //     `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
-      //       this.dateToFilter
-      //     }&isASc=${this.isAscending}${
-      //       this.userToFilter !== null && this.userToFilter !== ""
-      //         ? "&userId=" + this.userToFilter
-      //         : ""
-      //     }`
-      //   );
-      // } else if (this.dateEndFilter !== null && this.dateStartFilter !== null) {
-      //   this.getHistory(
-      //     `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
-      //       this.dateStartFilter
-      //     }&dateEnd=${this.dateEndFilter}${
-      //       this.userToFilter !== null && this.userToFilter !== ""
-      //         ? "&userId=" + this.userToFilter
-      //         : ""
-      //     }`
-      //   );
-      // } else {
-      //   this.getHistory(
-      //     `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}${
-      //       this.userToFilter !== null && this.userToFilter !== ""
-      //         ? "&userId=" + this.userToFilter
-      //         : ""
-      //     }`
-      //   );
-      // }
       this.getHistory();
     },
 
@@ -452,17 +440,8 @@ export default {
         .split("T")[0];
       this.dateStartFilter = dateStartFilter;
       this.dateEndFilter = dateEndFilter;
-      let itemsPerPage = this.itemsPerPage;
       this.isAscending = true;
-      let isAscending = this.isAscending;
 
-      // this.getHistory(
-      //   `?start=0&nb=${itemsPerPage}&dateStart=${dateToFilter}&isASc=${isAscending}${
-      //     this.userToFilter !== null && this.userToFilter !== ""
-      //       ? "&userId=" + this.userToFilter
-      //       : ""
-      //   }`
-      // );
       this.getHistory();
       this.showDeleteFiltersButton = true;
     },
@@ -500,15 +479,6 @@ export default {
             this.dateStartFilter = dateStart;
             this.dateEndFilter = dateEnd;
 
-            // this.getHistory(
-            //   `?start=0&nb=${
-            //     this.itemsPerPage
-            //   }&dateStart=${dateStart}&dateEnd=${dateEnd}${
-            //     this.userToFilter !== null && this.userToFilter !== ""
-            //       ? "&userId=" + this.userToFilter
-            //       : ""
-            //   }`
-            // );
             this.getHistory();
           }
         }
@@ -517,15 +487,8 @@ export default {
 
     filterWithUserId(event) {
       if (event !== null) {
-        // this.getHistory(
-        //   `?start=0&nb=${this.itemsPerPage}&isASc=${isAscending}${
-        //     this.userToFilter !== null && this.userToFilter !== ""
-        //       ? "&userId=" + this.userToFilter
-        //       : ""
-        //   }`
-        // );
+        this.userToFilter = event;
         this.getHistory();
-
         this.showDeleteFiltersButton = true;
       }
     },
@@ -550,11 +513,14 @@ export default {
       }
     }
   }
+
   .v-table {
     &.userView {
-      height: calc(100vh - 320px);
+      max-height: calc(100vh - 320px);
     }
-    height: calc(100vh - 140px);
+
+    max-height: calc(100vh - 140px);
+
     &__wrapper {
       .v-data-table__thead {
         box-shadow: #0000004f 0px 3px 3px 1px;
@@ -596,6 +562,7 @@ export default {
         }
       }
     }
+
     .v-data-table-footer {
       justify-content: space-between;
     }

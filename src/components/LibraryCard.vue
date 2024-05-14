@@ -5,6 +5,7 @@
       :title="name"
       :image="getLibraryImage(id)"
       :to="url"
+      :elevation="4"
     ></v-card>
   </v-responsive>
 </template>

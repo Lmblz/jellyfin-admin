@@ -84,37 +84,79 @@ export default {
           sortable: false,
         },
       ],
-      itemsPerPage: 20,
-      itemsPerPageOptions: [10, 20, 50, 100],
+      itemsPerPage: 25,
+      itemsPerPageOptions: [10, 25, 50, 100],
+      currentPage: 0,
       isLoading: false,
       totalItems: 0,
       search: "",
     };
   },
 
-  props: ["libraryIdProp"],
+  props: {
+    defaultFilter: {
+      type: Array,
+    },
+  },
 
   created() {},
 
   mounted() {
-    this.libraryId = this.$props.libraryIdProp;
-    console.log(this.libraryId);
-    this.getLibrary(`?libraryId=${this.libraryId}&nb=${this.itemsPerPage}`);
+    this.getLibrary();
   },
 
   methods: {
-    async getLibrary(params) {
+    async getLibrary() {
+      this.isLoading = true;
+      let params = [];
+      const defaultFilter = this.$props.defaultFilter;
+
+      // Default filters based on context
+      if (defaultFilter !== undefined) {
+        defaultFilter.forEach((filter, index) => {
+          params.push({ param: filter.param, value: filter.value });
+        });
+      }
+
+      // Number of results
+      if (this.itemsPerPage > 0) {
+        params.push({ param: "nb", value: this.itemsPerPage });
+      }
+
+      // Start
+      if (this.currentPage > 0) {
+        params.push({
+          param: "start",
+          value: (this.currentPage - 1) * this.itemsPerPage,
+        });
+      }
+
+      let paramsString = "";
+
+      if (params.length > 0) {
+        paramsString += "?";
+        params.forEach((param, index) => {
+          let newParam = "";
+          if (index !== 0) newParam += "&";
+          newParam += param.param + "=" + param.value;
+          paramsString += newParam;
+        });
+      }
+
       try {
-        this.result = await LibrariesService.getLibrary(params);
+        this.result = await LibrariesService.getLibrary(paramsString);
         console.log(this.result);
         this.items = this.result.results;
         this.totalItems = this.result.count;
       } catch (e) {
         console.error(e);
       }
+
+      this.isLoading = false;
     },
     sortPagination(event) {
-      console.log(event);
+      this.currentPage = event.page;
+      this.getLibrary();
     },
     searchMedia() {
       console.log("search");

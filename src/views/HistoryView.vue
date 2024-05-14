@@ -1,5 +1,8 @@
 <template>
-  <history-table context="historyView"></history-table>
+  <history-table
+    context="historyView"
+    no-data="There's no result for your filters :("
+  />
 </template>
 <script>
 import HistoryTable from "@/components/HistoryTable.vue";

@@ -9,9 +9,11 @@
   </div>
 
   <history-table
+    v-if="userData && userData.totalWatch > 0"
     :userId="userId"
     context="userView"
     :default-filter="[{ param: 'userId', value: userId }]"
+    no-data="It seems empty here :/"
   ></history-table>
 </template>
 
@@ -30,7 +32,7 @@ export default {
       userHistory: [],
       userHistoryFormatted: [],
       itemsPerPage: 25,
-      itemsPerPageOptions: [10, 20, 50, 100],
+      itemsPerPageOptions: [10, 25, 50, 100],
       isHistoryLoading: true,
       totalItems: 0,
       headers: [
