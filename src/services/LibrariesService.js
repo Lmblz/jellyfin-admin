@@ -11,6 +11,14 @@ const instance = axios.create({
     }
 })
 
+const tmdbInstace = axios.create({
+    baseURL: "https://api.themoviedb.org/3/",
+    headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer ' + TMDB_SECRET,
+    }
+})
+
 export async function getLibraries() {
     const res = await instance.get();
     return res.data;
@@ -26,19 +34,22 @@ export async function getMediaInfos(id) {
     return res.data;
 }
 
-// export async function getMediaTmdbInfos(tmdbId) {
-//     const tmdbInstace = axios.create({
-//         baseURL: "https://api.themoviedb.org/3/movie",
-//         headers: {
-//             accept: 'application/json',
-//             Authorization: 'Bearer ' + TMDB_SECRET
-//         }
-//     })
-//     try {
-//         const res = await tmdbInstace.get("/" + tmdbId);
-//         return res.data;
-//     } catch (e) {
-//         console.error(e);
-//     }
+export async function getTvShowInfos(id, lang) {
+    const res = await tmdbInstace.get("tv/" + id + "?language=" + lang);
+    return res.data;
+}
 
-// }
+export async function getTvShowCasting(id, lang) {
+    const res = await tmdbInstace.get("tv/" + id + "/credits?language=" + lang);
+    return res.data;
+}
+
+export async function getMovieInfos(id, lang) {
+    const res = await tmdbInstace.get("movie/" + id + "?language=" + lang);
+    return res.data;
+}
+
+export async function getMovieCasting(id, lang) {
+    const res = await tmdbInstace.get("movie/" + id + "/credits?language=" + lang);
+    return res.data;
+}

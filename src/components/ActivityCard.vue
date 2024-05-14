@@ -5,7 +5,7 @@
     width="100%"
     height="100%"
     variant="tonal"
-    class="d-flex flex-column"
+    class="d-flex flex-column activity-card"
     :style="{ background: media.posterColor }"
   >
     <v-row class="pa-2 pb-0 ma-0">
@@ -374,34 +374,36 @@ export default {
 }
 
 .v-card {
-  & > .v-row {
-    background: linear-gradient(270deg, #121212ff, #12121200 90%) !important;
-    position: relative;
+  &.activity-card {
+    & > .v-row {
+      background: linear-gradient(270deg, #121212ff, #12121200 90%) !important;
+      position: relative;
 
-    .movie-image {
-      img {
-        aspect-ratio: 150 / 225;
+      .movie-image {
+        img {
+          aspect-ratio: 150 / 225;
+        }
       }
-    }
 
-    .file-name {
-      white-space: nowrap;
-      cursor: default;
+      .file-name {
+        white-space: nowrap;
+        cursor: default;
 
-      &.-overflown {
-        overflow: hidden;
-        text-overflow: ellipsis;
+        &.-overflown {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
-    }
 
-    & > .v-col {
-      &.list-params {
-        position: relative;
+      & > .v-col {
+        &.list-params {
+          position: relative;
 
-        .player-image {
-          position: absolute;
-          top: 0;
-          right: 0;
+          .player-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+          }
         }
       }
     }

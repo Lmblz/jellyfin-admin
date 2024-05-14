@@ -8,7 +8,11 @@
     ></user-card>
   </div>
 
-  <history-table :userId="userId" context="userView"></history-table>
+  <history-table
+    :userId="userId"
+    context="userView"
+    :default-filter="[{ param: 'userId', value: userId }]"
+  ></history-table>
 </template>
 
 <script>

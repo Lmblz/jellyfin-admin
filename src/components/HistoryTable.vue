@@ -59,11 +59,12 @@
             (dateStartFilter = null),
             (dateEndFilter = null),
             (userToFilter = null),
-            getHistory(
-              `?start=0&nb=${itemsPerPage}&isASc=${isAscending}&userId=${
-                userId ? userId : ''
-              }`
-            )
+            this.getHistory()
+          // getHistory(
+          //   `?start=0&nb=${itemsPerPage}&isASc=${isAscending}&userId=${
+          //     userId ? userId : ''
+          //   }`
+          // )
         "
         >Delete filter</v-btn
       >
@@ -143,6 +144,7 @@ export default {
       history: {},
       historyResults: [],
       historyResultsFormatted: [],
+      currentPage: 0,
       itemsPerPage: 25,
       itemsPerPageOptions: [10, 20, 50, 100],
       totalItems: 0,
@@ -221,10 +223,22 @@ export default {
     context: {
       type: String,
     },
+    defaultFilter: {
+      type: Array,
+    },
+    nbResults: {
+      type: Number,
+    },
   },
 
   created() {
     this.userId ? (this.userToFilter = this.userId) : "";
+  },
+
+  mounted() {
+    if (this.$props.nbResults !== undefined) {
+      this.itemsPerPage = this.$props.nbResults;
+    }
   },
 
   computed: {
@@ -244,13 +258,65 @@ export default {
       }
     },
 
-    async getHistory(params) {
+    async getHistory() {
       this.isHistoryLoading = true;
       this.historyResults = [];
       this.historyResultsFormatted = [];
+      let params = [];
+      const defaultFilter = this.$props.defaultFilter;
 
+      // Default filters based on context
+      if (defaultFilter !== undefined) {
+        defaultFilter.forEach((filter, index) => {
+          params.push({ param: filter.param, value: filter.value });
+        });
+      }
+
+      // Number of results
+      if (this.itemsPerPage > 0) {
+        params.push({ param: "nb", value: this.itemsPerPage });
+      }
+
+      // Start
+      if (this.currentPage > 0) {
+        params.push({
+          param: "start",
+          value: (this.currentPage - 1) * this.itemsPerPage,
+        });
+      }
+
+      // Date start
+      if (this.dateStartFilter !== null) {
+        console.log(this.dateStartFilter);
+        params.push({
+          param: "dateStart",
+          value: this.dateStartFilter,
+        });
+      }
+
+      // Date end
+      if (this.dateEndFilter !== null) {
+        console.log(this.dateEndFilter);
+        params.push({
+          param: "dateEnd",
+          value: this.dateEndFilter,
+        });
+      }
+
+      let paramsString = "";
+      if (params.length > 0) {
+        paramsString += "?";
+        params.forEach((param, index) => {
+          let newParam = "";
+          if (index !== 0) newParam += "&";
+          newParam += param.param + "=" + param.value;
+          paramsString += newParam;
+        });
+      }
+      console.log(params);
+      console.log(paramsString);
       try {
-        this.history = await HistoryService.get(params);
+        this.history = await HistoryService.get(paramsString);
         this.totalItems = this.history.count;
         this.history.results.forEach((item) => {
           this.historyResults.push(item);
@@ -313,8 +379,6 @@ export default {
       item.watchedDurationFormatted = watchDurationFormatted;
 
       // Percentage watched
-      console.log((watchTimeInSecond / totalDurationInSecond) * 100);
-      console.log("------");
       let percentageWatched = Math.round(
         (watchTimeInSecond / totalDurationInSecond) * 100
       );
@@ -342,55 +406,64 @@ export default {
     },
 
     sortPagination(event) {
+      console.log(event);
+      this.currentPage = event.page;
       let page = event.page;
       let itemsPerPage = event.itemsPerPage;
-      if (this.dateToFilter !== null) {
-        this.getHistory(
-          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
-            this.dateToFilter
-          }&isASc=${this.isAscending}${
-            this.userToFilter !== null && this.userToFilter !== ""
-              ? "&userId=" + this.userToFilter
-              : ""
-          }`
-        );
-      } else if (this.dateEndFilter !== null && this.dateStartFilter !== null) {
-        this.getHistory(
-          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
-            this.dateStartFilter
-          }&dateEnd=${this.dateEndFilter}${
-            this.userToFilter !== null && this.userToFilter !== ""
-              ? "&userId=" + this.userToFilter
-              : ""
-          }`
-        );
-      } else {
-        this.getHistory(
-          `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}${
-            this.userToFilter !== null && this.userToFilter !== ""
-              ? "&userId=" + this.userToFilter
-              : ""
-          }`
-        );
-      }
+      // if (this.dateToFilter !== null) {
+      //   this.getHistory(
+      //     `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
+      //       this.dateToFilter
+      //     }&isASc=${this.isAscending}${
+      //       this.userToFilter !== null && this.userToFilter !== ""
+      //         ? "&userId=" + this.userToFilter
+      //         : ""
+      //     }`
+      //   );
+      // } else if (this.dateEndFilter !== null && this.dateStartFilter !== null) {
+      //   this.getHistory(
+      //     `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}&dateStart=${
+      //       this.dateStartFilter
+      //     }&dateEnd=${this.dateEndFilter}${
+      //       this.userToFilter !== null && this.userToFilter !== ""
+      //         ? "&userId=" + this.userToFilter
+      //         : ""
+      //     }`
+      //   );
+      // } else {
+      //   this.getHistory(
+      //     `?start=${(page - 1) * itemsPerPage}&nb=${itemsPerPage}${
+      //       this.userToFilter !== null && this.userToFilter !== ""
+      //         ? "&userId=" + this.userToFilter
+      //         : ""
+      //     }`
+      //   );
+      // }
+      this.getHistory();
     },
 
     filterDatePicker(event) {
-      let dateToFilter = new Date(event.setDate(event.getDate() + 1))
+      let dateStartFilter = new Date(event.setDate(event.getDate() + 1))
         .toISOString()
         .split("T")[0];
-      this.dateToFilter = dateToFilter;
+
+      let dateEndFilter = new Date(event.setDate(event.getDate() + 1))
+        .toISOString()
+        .split("T")[0];
+      this.dateStartFilter = dateStartFilter;
+      this.dateEndFilter = dateEndFilter;
       let itemsPerPage = this.itemsPerPage;
       this.isAscending = true;
       let isAscending = this.isAscending;
 
-      this.getHistory(
-        `?start=0&nb=${itemsPerPage}&dateStart=${dateToFilter}&isASc=${isAscending}${
-          this.userToFilter !== null && this.userToFilter !== ""
-            ? "&userId=" + this.userToFilter
-            : ""
-        }`
-      );
+      // this.getHistory(
+      //   `?start=0&nb=${itemsPerPage}&dateStart=${dateToFilter}&isASc=${isAscending}${
+      //     this.userToFilter !== null && this.userToFilter !== ""
+      //       ? "&userId=" + this.userToFilter
+      //       : ""
+      //   }`
+      // );
+      this.getHistory();
       this.showDeleteFiltersButton = true;
     },
 
@@ -427,15 +500,16 @@ export default {
             this.dateStartFilter = dateStart;
             this.dateEndFilter = dateEnd;
 
-            this.getHistory(
-              `?start=0&nb=${
-                this.itemsPerPage
-              }&dateStart=${dateStart}&dateEnd=${dateEnd}${
-                this.userToFilter !== null && this.userToFilter !== ""
-                  ? "&userId=" + this.userToFilter
-                  : ""
-              }`
-            );
+            // this.getHistory(
+            //   `?start=0&nb=${
+            //     this.itemsPerPage
+            //   }&dateStart=${dateStart}&dateEnd=${dateEnd}${
+            //     this.userToFilter !== null && this.userToFilter !== ""
+            //       ? "&userId=" + this.userToFilter
+            //       : ""
+            //   }`
+            // );
+            this.getHistory();
           }
         }
       }
@@ -443,13 +517,14 @@ export default {
 
     filterWithUserId(event) {
       if (event !== null) {
-        this.getHistory(
-          `?start=0&nb=${this.itemsPerPage}&isASc=${isAscending}${
-            this.userToFilter !== null && this.userToFilter !== ""
-              ? "&userId=" + this.userToFilter
-              : ""
-          }`
-        );
+        // this.getHistory(
+        //   `?start=0&nb=${this.itemsPerPage}&isASc=${isAscending}${
+        //     this.userToFilter !== null && this.userToFilter !== ""
+        //       ? "&userId=" + this.userToFilter
+        //       : ""
+        //   }`
+        // );
+        this.getHistory();
 
         this.showDeleteFiltersButton = true;
       }
