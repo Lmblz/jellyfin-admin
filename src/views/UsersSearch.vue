@@ -1,53 +1,12 @@
 <template>
-  <v-card class="mx-auto my-2 w-100 pa-2">
-    <v-form
-      validate-on="submit lazy"
-      @submit.prevent="
-        {
-          search.length > 0 ? searchUser() : '';
-        }
-      "
-    >
-      <v-text-field
-        :loading="isLoading"
-        v-model="search"
-        prepend-inner-icon="mdi-account"
-        append-inner-icon="mdi-magnify"
-        :rules="rules"
-        label="Search for a user"
-        variant="outlined"
-        clearable
-        @click:append-inner="search.length > 0 ? searchUser() : ''"
-      ></v-text-field>
-    </v-form>
-  </v-card>
-  <v-row v-if="result && users.length > 0">
-    <v-col cols="12">
-      <h2>{{ users.length }} result<slot v-if="users.length > 1">s</slot></h2>
-    </v-col>
-    <v-col
-      v-for="(user, index) in users"
-      :key="user.id"
-      xxl="2"
-      lg="3"
-      md="4"
-      cols="6"
-    >
-      <!-- <p>{{ user }}</p> -->
-      <user-card :userData="user" context="usersSearch"></user-card>
-    </v-col>
-  </v-row>
-  <v-row v-else>
-    <v-col cols="12">
-      <h2>Total users : {{ totalUsers }}</h2>
-      <v-btn @click="getUsers('?nb=' + totalUsers)">Search all users</v-btn>
-    </v-col>
-  </v-row>
+  <users-table></users-table>
 </template>
 
 <script>
 import * as UsersService from "../services/UsersService";
 import UserCard from "@/components/UserCard.vue";
+import UsersTable from "@/components/UsersTable.vue";
+import UsersTable from "@/components/UsersTable.vue";
 
 export default {
   data() {
@@ -70,6 +29,7 @@ export default {
 
   components: {
     UserCard,
+    UsersTable,
   },
 
   async mounted() {
