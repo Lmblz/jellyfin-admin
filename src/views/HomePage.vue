@@ -75,7 +75,7 @@
           logo: activity.deviceLogo,
         }"
         :media="{
-          id: activity.tmdbId,
+          tmdbId: activity.tmdbId,
           title: activity.title,
           type: activity.mediaType,
           percentWatch: activity.percentWatch,

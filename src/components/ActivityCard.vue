@@ -99,7 +99,7 @@
           </div>
           <p class="text-caption mr-2 media-title" ref="mediaTitle">
             <router-link
-              :to="'/media/' + media.id"
+              :to="'/media/'"
               style="color: inherit; text-decoration: inherit"
             >
               <v-tooltip
@@ -243,6 +243,7 @@ export default {
   },
 
   mounted() {
+    console.log(this.$props.media);
     let fileNameElement = this.$refs.fileName;
     let parentCard = fileNameElement.closest(".v-card");
     if (fileNameElement.offsetWidth > parentCard.offsetWidth) {
@@ -279,6 +280,7 @@ export default {
     getMediaPoster() {
       return `https://j.nimi.ovh/Items/${this.$props.media.posterId}/Images/Primary`;
     },
+
     getPauseDuration() {
       let time = this.$props.media.pause.pauseDuration;
       let timeFormatted = this.getHhMmSs(time);
@@ -295,11 +297,13 @@ export default {
         return `Pause duration : ${timeFormatted.mm} minutes and ${timeFormatted.ss} seconds`;
       }
     },
+
     getTotalDuration() {
       let totalTime = this.$props.media.file.runtime;
       let totalTimeFormatted = this.getHhMmSs(totalTime);
       return totalTimeFormatted;
     },
+
     getTimePlayed() {
       let remaningTime = this.$props.media.remaningTime;
       let remaningTimeFormatted = this.getHhMmSs(remaningTime);
@@ -319,10 +323,12 @@ export default {
 
       return new Date(timeDifference * 1000).toISOString().slice(11, 19);
     },
+
     getPlayerImage() {
       let logo = this.$props.device.logo;
       return "/Player-logos/" + logo + ".png";
     },
+
     getListSessionServices() {
       let arr = [];
       this.$props.media.pause.isPaused
@@ -341,6 +347,7 @@ export default {
       let ss = dataArray[2].split(".")[0];
       return { hh, mm, ss };
     },
+
     getDdMmAaaa(date) {
       let dataArray = date.split("-");
       let dd = dataArray[2];
@@ -348,9 +355,11 @@ export default {
       let aaaa = dataArray[0];
       return { dd, mm, aaaa };
     },
+
     convertTimeToSeconds(hh, mm, ss) {
       return parseInt(hh) * 3600 + parseInt(mm) * 60 + parseInt(ss);
     },
+
     formatTime(timestamp) {
       let timestampSplitted = timestamp.split("T");
       let days = timestampSplitted[0];
@@ -361,6 +370,7 @@ export default {
 
       return `${daysFormatted.dd}/${daysFormatted.mm}/${daysFormatted.aaaa} à ${timeFormatted.hh}h${timeFormatted.mm}`;
     },
+
     emitStopAllSessions() {
       this.$emit("stopAllSessions");
     },
