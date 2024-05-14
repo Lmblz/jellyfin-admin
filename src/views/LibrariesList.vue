@@ -1,4 +1,5 @@
 <template>
+  <h1>Libraries</h1>
   <v-row>
     <slot v-if="libraries.length > 0">
       <v-col cols="3" v-for="(library, index) in libraries" :key="index">

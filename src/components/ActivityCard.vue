@@ -98,13 +98,18 @@
             </v-menu>
           </div>
           <p class="text-caption mr-2 media-title" ref="mediaTitle">
-            <v-tooltip
-              v-if="isMediaTitleOverflown"
-              activator="parent"
-              location="end"
-              >{{ media.title }}</v-tooltip
+            <router-link
+              :to="'/media/' + media.id"
+              style="color: inherit; text-decoration: inherit"
             >
-            {{ media.title }}
+              <v-tooltip
+                v-if="isMediaTitleOverflown"
+                activator="parent"
+                location="end"
+                >{{ media.title }}</v-tooltip
+              >
+              {{ media.title }}
+            </router-link>
           </p>
           <slot v-if="media.type == 'tv'">
             <p class="text-caption mr-2 show-episode" ref="showEpisode">
@@ -401,6 +406,7 @@ export default {
       }
     }
   }
+
   &-actions {
     position: relative;
     box-shadow: inset #0000009c 0px 6px 5px -2px;
@@ -412,6 +418,7 @@ export default {
       top: 0;
       left: 0;
     }
+
     & > .v-row {
       width: 100%;
       position: relative;

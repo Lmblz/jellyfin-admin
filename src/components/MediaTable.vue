@@ -26,6 +26,7 @@
       density="comfortable"
       :hover="true"
       fixed-header
+      :sticky="true"
       :headers="headers"
       :items="items"
       :items-per-page="itemsPerPage"
@@ -41,7 +42,26 @@
           :to="`/media/${item.id}`"
           style="color: inherit; text-decoration: inherit"
         >
-          <p>{{ item.title }}</p>
+          <v-row class="align-center">
+            <v-avatar color="primary" size="small" class="mr-4">
+              <slot v-if="item.mediaPictureId !== null">
+                <img
+                  :src="
+                    'https://j.nimi.ovh/items/' +
+                    item.mediaPictureId +
+                    '/Images/Primary'
+                  "
+                  class="w-100"
+                />
+              </slot>
+            </v-avatar>
+            <p>
+              {{ item.title }}
+              <span class="text-caption" style="opacity: 0.8">
+                {{ item.type == "tv" ? " - TV show" : " - Movie" }}
+              </span>
+            </p>
+          </v-row>
         </router-link>
       </template>
     </v-data-table-server>
@@ -49,7 +69,6 @@
 </template>
 
 <script>
-import router from "@/router";
 import * as LibrariesService from "../services/LibrariesService";
 
 export default {
@@ -72,13 +91,17 @@ export default {
       search: "",
     };
   },
+
   props: ["libraryIdProp"],
+
   created() {},
+
   mounted() {
     this.libraryId = this.$props.libraryIdProp;
     console.log(this.libraryId);
     this.getLibrary(`?libraryId=${this.libraryId}&nb=${this.itemsPerPage}`);
   },
+
   methods: {
     async getLibrary(params) {
       try {
@@ -97,6 +120,5 @@ export default {
       console.log("search");
     },
   },
-  components: { router },
 };
 </script>

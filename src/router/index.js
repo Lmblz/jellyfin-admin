@@ -1,26 +1,26 @@
 // Composables
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from "vue-router";
 
 import HomePage from "../views/HomePage.vue";
-const Libraries = () => import("../views/LibrariesView.vue");
-const LibrariesList = () => import("../views/LibrariesList.vue");
-const Library = () => import("../views/LibraryView.vue");
-const Users = () => import("../views/UsersView.vue");
-const History = () => import("../views/HistoryView.vue");
-const UsersSearch = () => import('../views/UsersSearch.vue');
-const User = () => import("../views/UserView.vue");
-const Media = () => import("../views/MediaView.vue");
+import Libraries from "../views/LibrariesView.vue";
+import LibrariesList from "../views/LibrariesList.vue";
+import Library from "../views/LibraryView.vue";
+import Users from "../views/UsersView.vue";
+import UsersSearch from "../views/UsersSearch.vue";
+import User from "../views/UserView.vue";
+import History from "../views/HistoryView.vue";
+import Media from "../views/MediaView.vue";
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    alias: '/home',
+    path: "/",
+    name: "Home",
+    alias: "/home",
     component: HomePage,
     children: [
       {
-        path: '',
-        name: 'Home',
+        path: "",
+        name: "Home",
         component: HomePage,
       },
     ],
@@ -28,43 +28,43 @@ const routes = [
   {
     path: "/libraries",
     name: "Libraries",
-    alias: '/libraries',
+    alias: "/libraries",
     component: Libraries,
     children: [
       {
-        name: 'LibrariesList',
-        path: '',
+        name: "LibrariesList",
+        path: "",
         component: LibrariesList,
       },
       {
         name: "Library",
         path: ":id",
-        component: Library
-      }
-    ]
+        component: Library,
+      },
+    ],
   },
   {
-    path: '/users',
-    name: 'Users',
-    alias: '/users',
+    path: "/users",
+    name: "Users",
+    alias: "/users",
     component: Users,
     children: [
       {
-        name: 'Search',
-        path: '',
-        component: UsersSearch
+        name: "Search",
+        path: "",
+        component: UsersSearch,
       },
       {
-        name: 'User',
-        path: ':id',
+        name: "User",
+        path: ":id",
         component: User,
-      }
-    ]
+      },
+    ],
   },
   {
-    path: '/history',
-    name: 'History',
-    alias: '/history',
+    path: "/history",
+    name: "History",
+    alias: "/history",
     component: History,
   },
   {
@@ -78,16 +78,14 @@ const routes = [
     component: Media,
     beforeEnter: (to, from, next) => {
       const id = parseInt(to.params.id);
-      isNaN(id)
-        ? next("/")
-        : next();
-    }
-  }
-]
+      isNaN(id) ? next("/") : next();
+    },
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes,
-})
+});
 
-export default router
+export default router;
