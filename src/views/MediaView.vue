@@ -1,16 +1,19 @@
 <template>
   <!-- #region Hero banner -->
   <v-row
-    class="ma-0"
+    class="ma-0 align-center justify-center flex-wrap hero-section"
     :style="!tmdbLoading ? backdropStyle : ''"
     style="
       background-size: cover;
       background-position: top center;
-      height: 75dvh;
+      height: 80dvh;
     "
   >
-    <v-col cols="1"></v-col>
-    <v-col cols="8" class="h-100 d-flex flex-column justify-center">
+    <v-col
+      cols="12"
+      sm="5"
+      class="h-100 d-flex flex-column justify-center hero-section__main"
+    >
       <h1>{{ mediaData.title }}</h1>
       <!-- #region Genre -->
       <v-row class="ma-0 mt-4" style="flex: 0" v-if="!tmdbLoading">
@@ -55,11 +58,31 @@
       </b>
       <!-- #endregion -->
     </v-col>
+    <v-col xxl="2" md="4" sm="6" cols="12" class="hero-section__image">
+      <v-responsive
+        :aspect-ratio="9 / 16"
+        style="max-height: calc(60dvh - 100px)"
+      >
+        <v-card
+          class="h-100 image__card"
+          :elevation="4"
+          style="width: fit-content; margin: auto"
+        >
+          <img
+            :src="
+              'https://j.nimi.ovh/items/' +
+              mediaData.mediaPictureId +
+              '/Images/Primary'
+            "
+            style="height: 100%"
+        /></v-card>
+      </v-responsive>
+    </v-col>
   </v-row>
   <!-- #endregion -->
   <!-- #region Description card -->
   <v-row class="justify-center ma-0">
-    <v-col class="" cols="8">
+    <v-col class="" cols="12" sm="10" md="8" lg="6" xl="5" xxl="4">
       <v-card
         v-if="!tmdbLoading && !dataLoading"
         class="mt-n16 pa-4 pr-0"
@@ -98,84 +121,53 @@
         <p class="ma-2 pr-4">{{ tmdbData.overview }}</p>
         <!-- #endregion -->
         <!-- #region Created by -->
-        <slot v-if="tmdbData.created_by && tmdbData.created_by.length > 0">
-          <p class="font-weight-bold mt-6">Created by</p>
-          <v-row class="ma-0">
-            <p
-              v-for="(creator, index) in tmdbData.created_by"
-              :key="index"
-              class="pr-4"
-            >
-              {{ creator.name }}
-            </p>
-          </v-row>
-        </slot>
-        <!-- #endregion -->
-        <!-- #region Casting -->
-        <slot v-if="casting && casting.cast.length > 0">
-          <p class="font-weight-bold mt-6 pr-4">Casting</p>
-          <swiper
-            class="mt-2"
-            :slidesPerView="'auto'"
-            :spaceBetween="30"
-            :freeMmode="true"
-          >
-            <swiper-slide
-              v-for="(cast, index) in casting.cast"
-              :key="index"
-              class="d-flex flex-column align-center"
-              style="width: 60px"
-            >
-              <v-avatar color="primary">
-                <v-img
-                  v-if="cast.profile_path"
-                  :src="
-                    'https://media.themoviedb.org/t/p/w138_and_h175_face/' +
-                    cast.profile_path
-                  "
-                />
-                <p v-else>{{ cast.original_name[0] }}</p>
-              </v-avatar>
+        <!-- <slot v-if="tmdbData.created_by && tmdbData.created_by.length > 0">
+            <p class="font-weight-bold mt-6">Created by</p>
+            <v-row class="ma-0">
               <p
-                class="text-caption text-center mt-1 members-name"
-                style="line-height: 1.2"
+                v-for="(creator, index) in tmdbData.created_by"
+                :key="index"
+                class="pr-4"
               >
-                {{ cast.original_name }}
+                {{ creator.name }}
               </p>
-            </swiper-slide>
-          </swiper>
-        </slot>
+            </v-row>
+          </slot> -->
         <!-- #endregion -->
         <!-- #region Casting -->
-        <slot v-if="casting && casting.crew.length > 0">
-          <p class="font-weight-bold mt-4">Crew</p>
+        <slot v-if="mediaData && mediaData.casting.length > 0">
           <swiper
-            class="mt-2"
+            class="mt-6"
             :slidesPerView="'auto'"
             :spaceBetween="30"
             :freeMmode="true"
+            :center-insufficient-slides="true"
           >
             <swiper-slide
-              v-for="(member, index) in casting.crew"
+              v-for="(cast, index) in mediaData.casting"
               :key="index"
               class="d-flex flex-column align-center"
-              style="width: 60px"
+              style="width: 100px"
             >
-              <v-avatar color="primary">
+              <v-avatar color="primary" size="80">
                 <v-img
-                  v-if="member.profile_path"
                   :src="
-                    'https://media.themoviedb.org/t/p/w138_and_h175_face/' +
-                    member.profile_path
+                    'https://j.nimi.ovh/items/' + cast.id + '/Images/Primary'
                   "
+                  width="50px"
                 />
-                <p v-else>{{ member.original_name[0] }}</p>
               </v-avatar>
               <p
                 class="text-caption text-center mt-1 members-name"
                 style="line-height: 1.2"
               >
-                {{ member.original_name }}
+                {{ cast.name }}
+              </p>
+              <p
+                class="text-caption text-center mt-1 members-name"
+                style="line-height: 1.2"
+              >
+                ({{ cast.character }})
               </p>
             </swiper-slide>
           </swiper>
@@ -355,6 +347,24 @@ export default {
 </script>
 
 <style lang="scss">
+.hero-section {
+  @media all and (max-width: 600px) {
+    align-items: inherit !important;
+    justify-content: inherit !important;
+    align-content: flex-start;
+
+    &__main {
+      height: fit-content !important;
+    }
+
+    &__image {
+      .image__card {
+        height: 100%;
+      }
+    }
+  }
+}
+
 .members-name {
   white-space: nowrap;
   text-overflow: ellipsis;
